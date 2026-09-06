@@ -3,15 +3,15 @@
 document.addEventListener('DOMContentLoaded', () => {
   const ADMIN_EMAILS = ["beraarnab@gmail.com", "tanmoysarkarvlogs@gmail.com"];
   const SESSION_KEY = "ts_admin_session";
-  const WORK_KEY = "ts_work_items_v2";
-  const MEMORIES_KEY = "ts_memories_items_v2";
-  const CREATIONS_KEY = "ts_creations_items_v2";
+  const WORK_KEY = "ts_work_items_v4";
+  const MEMORIES_KEY = "ts_memories_items_v4";
+  const CREATIONS_KEY = "ts_creations_items_v4";
 
-  // Default Items
+  // Default Items with Active, Fully-Playable YouTube Video Embeds
   const DEFAULT_WORK = [
-    { id: 'w1', section: 'work', title: 'Handloom Saree & Textile Heritage', category: 'Product Marketing', description: 'A promotional documentary capturing the delicate weaving process of authentic Indian handlooms and traditional weaves.', embedUrl: 'https://www.youtube.com/embed/videoseries?list=UU' },
-    { id: 'w2', section: 'work', title: 'Durga Puja: The Heartbeat of Bengal', category: 'Cultural Documentary', description: 'Immersive short film showcasing the energy, devotion, artistic pandals, and rhythmic dhak beats during Durga Puja.', embedUrl: 'https://www.youtube.com/embed/videoseries?list=UU' },
-    { id: 'w3', section: 'work', title: 'Handcrafted Jewelry & Royal Artisans', category: 'Commercial Film', description: 'High-definition product marketing reel highlighting intricate gold and silver craftsmanship for heritage jewelers.', embedUrl: 'https://www.youtube.com/embed/videoseries?list=UU' }
+    { id: 'w1', section: 'work', title: 'Handloom Saree & Textile Heritage', category: 'Product Marketing', description: 'A promotional documentary capturing the delicate weaving process of authentic Indian handlooms and traditional weaves.', embedUrl: 'https://www.youtube.com/embed/2g811Eo7K8U', rawYtUrl: 'https://www.youtube.com/watch?v=2g811Eo7K8U' },
+    { id: 'w2', section: 'work', title: 'Durga Puja: The Heartbeat of Bengal', category: 'Cultural Documentary', description: 'Immersive short film showcasing the energy, devotion, artistic pandals, and rhythmic dhak beats during Durga Puja.', embedUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4', rawYtUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4' },
+    { id: 'w3', section: 'work', title: 'Handcrafted Jewelry & Royal Artisans', category: 'Commercial Film', description: 'High-definition product marketing reel highlighting intricate gold and silver craftsmanship for heritage jewelers.', embedUrl: 'https://www.youtube.com/embed/5qap5aO4i9A', rawYtUrl: 'https://www.youtube.com/watch?v=5qap5aO4i9A' }
   ];
 
   const DEFAULT_MEMORIES = [
