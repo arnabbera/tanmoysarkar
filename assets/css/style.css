@@ -192,22 +192,28 @@ body.admin-mode .hero {
 /* Hero Section */
 .hero {
   position: relative;
-  min-height: 90vh;
-  padding-top: 6rem;
+  min-height: 85vh;
+  padding: 7.5rem 1.5rem 4rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: linear-gradient(180deg, rgba(9, 13, 22, 0.4) 0%, rgba(9, 13, 22, 0.95) 100%), url('../images/hero_banner.png');
+  background-image: linear-gradient(180deg, rgba(9, 13, 22, 0.5) 0%, rgba(9, 13, 22, 0.95) 100%), url('../images/hero_banner.png');
   background-size: cover;
-  background-position: center;
+  background-position: center center;
   border-bottom: 1px solid var(--border-glass);
 }
 
 .hero-overlay {
-  max-width: 900px;
+  max-width: 860px;
   margin: 0 auto;
   text-align: center;
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 2rem;
+  background: rgba(9, 13, 22, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
 }
 
 .badge-tag {
@@ -221,14 +227,15 @@ body.admin-mode .hero {
   border-radius: 50px;
   font-size: 0.85rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .hero h1 {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-size: clamp(2.2rem, 5.5vw, 4.2rem);
   font-weight: 800;
   line-height: 1.15;
   margin-bottom: 1.2rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
 }
 
 .text-gradient {
@@ -238,12 +245,13 @@ body.admin-mode .hero {
 }
 
 .hero-subtitle {
-  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  font-size: clamp(0.95rem, 2vw, 1.2rem);
   color: var(--text-muted);
   margin-bottom: 2rem;
   max-width: 750px;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.6;
 }
 
 .hero-subtitle strong {
@@ -922,5 +930,34 @@ body.admin-mode .hero {
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: 75vh;
+    padding: 6.5rem 1rem 3rem 1rem;
+  }
+
+  .hero-overlay {
+    padding: 1.8rem 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .hero h1 {
+    font-size: 2.1rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+    justify-content: center;
   }
 }
