@@ -189,49 +189,39 @@ body.admin-mode .hero {
   cursor: pointer;
 }
 
-/* Hero Section (Full Banner Background with Right-Aligned Write-up Box over Yellow-Marked Region) */
+/* Hero Section (2-Column Split Layout matching attached picture) */
 .hero {
   position: relative;
   min-height: 88vh;
-  padding: 7.5rem 2rem 4rem 2rem;
+  padding: 7.5rem 1.5rem 4rem 1.5rem;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  background-image: linear-gradient(180deg, rgba(9, 13, 22, 0.3) 0%, rgba(9, 13, 22, 0.8) 100%), url('../images/hero_banner.png');
-  background-size: cover;
-  background-position: center center;
+  background: radial-gradient(circle at 75% 30%, rgba(78, 110, 242, 0.15) 0%, transparent 65%), var(--bg-dark);
   border-bottom: 1px solid var(--border-glass);
 }
 
-.hero-wrapper {
+.hero-container {
   max-width: 1280px;
-  width: 100%;
   margin: 0 auto;
-  display: flex;
-  justify-content: flex-end; /* Align write-up card over yellow marked region on right */
-}
-
-.hero-writeup-box {
-  max-width: 580px;
   width: 100%;
-  text-align: left;
-  padding: 2.5rem 2.2rem;
-  background: rgba(9, 13, 22, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(78, 110, 242, 0.25);
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 3.5rem;
+  align-items: center;
 }
 
-.hero-writeup-box .badge-tag {
+.hero-left {
+  text-align: left;
+}
+
+.hero-left .badge-tag {
   margin-bottom: 1.2rem;
 }
 
 .hero-title {
-  font-size: clamp(2.2rem, 3.8vw, 3.5rem);
+  font-size: clamp(2.4rem, 4.5vw, 4.2rem);
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.12;
   margin-bottom: 1.2rem;
   letter-spacing: -0.5px;
 }
@@ -243,9 +233,9 @@ body.admin-mode .hero {
 }
 
 .hero-subtitle {
-  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
   color: var(--text-muted);
-  margin-bottom: 1.8rem;
+  margin-bottom: 2rem;
   line-height: 1.65;
 }
 
@@ -258,7 +248,7 @@ body.admin-mode .hero {
   gap: 1rem;
   justify-content: flex-start;
   flex-wrap: wrap;
-  margin-bottom: 1.8rem;
+  margin-bottom: 2rem;
 }
 
 .hero-features-bar {
@@ -270,8 +260,36 @@ body.admin-mode .hero {
   text-transform: uppercase;
 }
 
-.hero-writeup-box .location-pills {
+.hero-left .location-pills {
   justify-content: flex-start;
+}
+
+.hero-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-banner-frame {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(78, 110, 242, 0.2);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  background: rgba(18, 24, 40, 0.5);
+}
+
+.hero-banner-frame:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 45px rgba(0, 242, 254, 0.3);
+}
+
+.hero-banner-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
 }
 
 .hero-actions {
@@ -950,23 +968,21 @@ body.admin-mode .hero {
 
   .hero {
     min-height: auto;
-    padding: 6.5rem 1rem 3rem 1rem;
-    justify-content: center;
+    padding: 6rem 1rem 3rem 1rem;
   }
 
-  .hero-wrapper {
-    justify-content: center;
-  }
-
-  .hero-writeup-box {
-    max-width: 100%;
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
     text-align: center;
-    padding: 1.8rem 1.2rem;
-    border-radius: var(--radius-md);
+  }
+
+  .hero-left {
+    text-align: center;
   }
 
   .hero-title {
-    font-size: 2.1rem;
+    font-size: 2.2rem;
   }
 
   .hero-subtitle {
@@ -974,7 +990,7 @@ body.admin-mode .hero {
     line-height: 1.6;
   }
 
-  .hero-actions, .hero-writeup-box .location-pills {
+  .hero-actions, .hero-left .location-pills {
     justify-content: center;
   }
 
@@ -986,5 +1002,10 @@ body.admin-mode .hero {
   .hero-actions .btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .hero-banner-frame {
+    max-width: 500px;
+    margin: 0 auto;
   }
 }
