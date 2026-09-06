@@ -1,4 +1,4 @@
-# Tanmay Sarkar Portfolio
+# Tanmoy Sarkar Portfolio
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-arnabbera%2Ftanmoysarkar-blue?logo=github)](https://github.com/arnabbera/tanmoysarkar)
 
