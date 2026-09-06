@@ -3,33 +3,360 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tanmay Sarkar - Videographer Portfolio</title>
-  <meta name="description" content="Professional videographer, digital creator, and storyteller showcasing Indian culture, festivals, and handcrafted crafts." />
-  <meta name="keywords" content="videography, short film, documentary, Indian festivals, handloom, handcrafted, digital creator" />
+  
+  <!-- Primary SEO Meta Tags -->
+  <title>Tanmay Sarkar | Video Journalist & Digital Creator | Videography & Short Films</title>
+  <meta name="title" content="Tanmay Sarkar | Video Journalist & Digital Creator | Videography & Short Films" />
+  <meta name="description" content="Official portfolio of Tanmay Sarkar - Video Journalist & Digital Creator capturing the soul of India. Specializing in Durga Puja festivals, handlooms, traditional handicrafts, jewelry marketing, and short film making." />
+  <meta name="keywords" content="Tanmay Sarkar, Video Journalist, Digital Creator, Videography, Short Film Making, Durga Puja, Indian Festivals, Handlooms, Handicrafts Marketing, Jewelry Films, Kolkata Videographer, Mumbai Filmmaker" />
+  <meta name="author" content="Tanmay Sarkar" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://arnabbera.github.io/tanmoysarkar/" />
+  <meta property="og:title" content="Tanmay Sarkar | Video Journalist & Digital Creator" />
+  <meta property="og:description" content="Capturing the soul of India from Durga Puja to Handlooms & Street Flavors." />
+  <meta property="og:image" content="assets/images/hero_banner.png" />
+
+  <!-- Fonts & Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css" />
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-  <header class="hero">
-    <div class="overlay">
-      <h1>Tanmay Sarkar</h1>
-      <p>Video Journalist & Digital Creator – Capturing the Soul of India</p>
-      <nav class="nav-tabs">
-        <a href="#about" class="tab active">About</a>
-        <a href="#work" class="tab">My Work</a>
-        <a href="#memories" class="tab">Memories</a>
-        <a href="#creations" class="tab">My Creations</a>
-        <a href="#contact" class="tab">Contact</a>
+
+  <!-- Navigation Bar -->
+  <header class="navbar-header">
+    <div class="nav-container">
+      <a href="#hero" class="brand-logo">
+        <i class="fa-solid fa-clapperboard logo-icon"></i>
+        <span>Tanmay<span class="logo-accent">Sarkar</span></span>
+      </a>
+
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <nav class="nav-tabs" id="navTabs">
+        <a href="#about" class="tab active"><i class="fa-solid fa-user"></i> About</a>
+        <a href="#work" class="tab"><i class="fa-solid fa-film"></i> My Work</a>
+        <a href="#memories" class="tab"><i class="fa-solid fa-heart"></i> Memories</a>
+        <a href="#creations" class="tab"><i class="fa-brands fa-youtube"></i> My Creations</a>
+        <a href="#contact" class="tab"><i class="fa-solid fa-paper-plane"></i> Contact</a>
+        <button class="admin-nav-btn" id="adminModalBtn"><i class="fa-solid fa-user-gear"></i> Admin</button>
       </nav>
     </div>
   </header>
 
-  <main id="content">
-    <!-- Sections will be loaded via JavaScript for smooth single‑page feel -->
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-overlay">
+      <div class="badge-tag"><i class="fa-solid fa-camera"></i> Video Journalist &amp; Storyteller</div>
+      <h1>Uncovering the <span class="text-gradient">Soul of India</span></h1>
+      <p class="hero-subtitle">
+        From the vibrant rhythm of <strong>Durga Puja</strong> and street flavors to timeless <strong>Monuments &amp; Mandirs</strong>. Crafting digital memories and product marketing films for <strong>Handlooms, Handicrafts &amp; Jewelry</strong>.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#work" class="btn btn-primary"><i class="fa-solid fa-play"></i> Explore Work</a>
+        <a href="#contact" class="btn btn-secondary"><i class="fa-solid fa-envelope"></i> Get In Touch</a>
+      </div>
+
+      <div class="location-pills">
+        <span><i class="fa-solid fa-location-dot"></i> Kolkata &amp; Mumbai</span>
+        <span><i class="fa-solid fa-plane"></i> Available Pan-India</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+
+    <!-- About Section -->
+    <section id="about" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">About Me</h2>
+        <p class="section-subtitle">Documenting traditions, culture, and craftsmanship across India</p>
+      </div>
+
+      <div class="about-grid">
+        <div class="about-card glass-card">
+          <div class="icon-box"><i class="fa-solid fa-camera-retro"></i></div>
+          <h3>Video Journalism &amp; Short Films</h3>
+          <p>
+            I am a Video Journalist and Digital Creator dedicated to capturing the Indian spirit. With a passion for authentic visual storytelling, my lens focuses on cultural festivals—especially Kolkata's majestic <strong>Durga Puja</strong>, heritage monuments, sacred mandirs, and local street flavors.
+          </p>
+        </div>
+
+        <div class="about-card glass-card">
+          <div class="icon-box"><i class="fa-solid fa-vest-patches"></i></div>
+          <h3>Handlooms &amp; Handicrafts Marketing</h3>
+          <p>
+            I partner with artisans, heritage brands, and craftsmen to create high-impact commercial and promotional films for <strong>Handloom Sarees, Jewelry, Traditional Crafts</strong>, and luxury fashion products.
+          </p>
+        </div>
+
+        <div class="about-card glass-card">
+          <div class="icon-box"><i class="fa-solid fa-earth-asia"></i></div>
+          <h3>Pan-India Presence</h3>
+          <p>
+            Based out of <strong>Kolkata</strong> and <strong>Mumbai</strong>, I am fully equipped and available for on-location filming, documentary shoots, and brand assignments anywhere across India.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- My Work Section -->
+    <section id="work" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">My Work</h2>
+        <p class="section-subtitle">Explore featured video assignments, promotional films, and creator updates</p>
+      </div>
+
+      <!-- Dynamic Admin Posts Container -->
+      <div id="adminPostsContainer" class="work-grid">
+        <!-- Admin posts will be dynamically prepended here -->
+      </div>
+
+      <!-- Default Work Showcase Cards -->
+      <div class="work-grid">
+        <div class="work-card glass-card">
+          <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/videoseries?list=UU" title="Handloom Saree Storytelling" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="card-body">
+            <span class="category-badge">Product Marketing</span>
+            <h3>Handloom Saree &amp; Textile Heritage</h3>
+            <p>A promotional documentary capturing the delicate weaving process of authentic Indian handlooms and traditional weaves.</p>
+          </div>
+        </div>
+
+        <div class="work-card glass-card">
+          <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/videoseries?list=UU" title="Durga Puja Festival Reel" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="card-body">
+            <span class="category-badge">Cultural Documentary</span>
+            <h3>Durga Puja: The Heartbeat of Bengal</h3>
+            <p>Immersive short film showcasing the energy, devotion, artistic pandals, and rhythmic dhak beats during Durga Puja.</p>
+          </div>
+        </div>
+
+        <div class="work-card glass-card">
+          <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/videoseries?list=UU" title="Traditional Jewelry Showcase" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <div class="card-body">
+            <span class="category-badge">Commercial Film</span>
+            <h3>Handcrafted Jewelry &amp; Royal Artisans</h3>
+            <p>High-definition product marketing reel highlighting intricate gold and silver craftsmanship for heritage jewelers.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Memories Section -->
+    <section id="memories" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Memories</h2>
+        <p class="section-subtitle">Moments captured in time — Festivals, Mandirs, and Monuments</p>
+      </div>
+
+      <div class="memories-grid">
+        <div class="memory-card glass-card">
+          <div class="memory-image" style="background-image: url('assets/images/hero_banner.png');">
+            <div class="memory-tag"><i class="fa-solid fa-gopuram"></i> Temple Heritage</div>
+          </div>
+          <div class="card-body">
+            <h3>Monuments to Mandirs</h3>
+            <p>Documenting ancient architectural marvels, sacred rituals, and the timeless spiritual essence of India.</p>
+          </div>
+        </div>
+
+        <div class="memory-card glass-card">
+          <div class="memory-image" style="background-image: url('assets/images/hero_banner.png');">
+            <div class="memory-tag"><i class="fa-solid fa-utensils"></i> Street Flavors</div>
+          </div>
+          <div class="card-body">
+            <h3>Flavors of Our Streets</h3>
+            <p>Exploring local culinary gems, street food masters, and secret recipes from Kolkata to Mumbai.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- My Creations Section -->
+    <section id="creations" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">My Creations</h2>
+        <p class="section-subtitle">Explore my official YouTube channels and digital content hubs</p>
+      </div>
+
+      <div class="creations-grid">
+        <!-- Fashion Channel -->
+        <div class="creation-card glass-card">
+          <div class="channel-icon"><i class="fa-brands fa-youtube icon-youtube"></i></div>
+          <div class="card-body">
+            <h3>Fashion &amp; Handloom Channel</h3>
+            <p class="channel-handle">@tanmoysarkarsarees</p>
+            <p>Dedicated to Indian fashion, saree draping arts, handloom weaving techniques, and boutique showcases.</p>
+            <a href="https://youtube.com/@tanmoysarkarsarees" target="_blank" rel="noopener" class="btn btn-outline">
+              <i class="fa-brands fa-youtube"></i> Visit Channel
+            </a>
+          </div>
+        </div>
+
+        <!-- Food Channel -->
+        <div class="creation-card glass-card">
+          <div class="channel-icon"><i class="fa-solid fa-bowl-food icon-food"></i></div>
+          <div class="card-body">
+            <h3>Foods &amp; Flavors</h3>
+            <p class="channel-handle">@foodisgod</p>
+            <p>A delicious tribute to Indian gastronomy, street food explorations, and authentic regional delicacies.</p>
+            <a href="https://youtube.com/@foodisgod" target="_blank" rel="noopener" class="btn btn-outline">
+              <i class="fa-brands fa-youtube"></i> Visit Channel
+            </a>
+          </div>
+        </div>
+
+        <!-- Blog Hub -->
+        <div class="creation-card glass-card">
+          <div class="channel-icon"><i class="fa-solid fa-blog icon-blog"></i></div>
+          <div class="card-body">
+            <h3>Official Travel &amp; Photo Blog</h3>
+            <p class="channel-handle">tanmoysarkarproductions.blogspot.com</p>
+            <p>Behind-the-scenes stories, shoot diaries, photography blogs, and video journalism insights.</p>
+            <a href="https://tanmoysarkarproductions.blogspot.com" target="_blank" rel="noopener" class="btn btn-outline">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Read Blog
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="content-section">
+      <div class="section-header">
+        <h2 class="section-title">Get In Touch</h2>
+        <p class="section-subtitle">Let's collaborate on your next digital film, commercial, or creative project</p>
+      </div>
+
+      <div class="contact-wrapper">
+        <div class="contact-info-card glass-card">
+          <h3>Business &amp; Collaboration Inquiries</h3>
+          <p>Reach out directly for commercial assignments, product marketing films, or festival documentation.</p>
+
+          <ul class="contact-details-list">
+            <li>
+              <div class="detail-icon"><i class="fa-solid fa-envelope"></i></div>
+              <div>
+                <strong>Email</strong>
+                <a href="mailto:tanmoysarkarvlogs@gmail.com">tanmoysarkarvlogs@gmail.com</a>
+              </div>
+            </li>
+            <li>
+              <div class="detail-icon"><i class="fa-brands fa-whatsapp"></i></div>
+              <div>
+                <strong>WhatsApp / Call</strong>
+                <a href="https://wa.me/919892880497" target="_blank">+91 9892880497</a>
+              </div>
+            </li>
+            <li>
+              <div class="detail-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+              <div>
+                <strong>Base Locations</strong>
+                <span>Kolkata &amp; Mumbai (Travel available Pan-India)</span>
+              </div>
+            </li>
+          </ul>
+
+          <div class="social-links-grid">
+            <a href="https://www.tanmoysarkar.com" target="_blank" class="social-btn" title="Official Website"><i class="fa-solid fa-globe"></i></a>
+            <a href="https://facebook.com/tanmoysarkarproductions" target="_blank" class="social-btn" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://twitter.com/tanmoyforever" target="_blank" class="social-btn" title="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://youtube.com/@tanmoysarkarsarees" target="_blank" class="social-btn" title="YouTube Fashion"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
+  <!-- Admin Modal / Portal -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-card glass-card">
+      <button class="modal-close" id="closeAdminModal">&times;</button>
+      
+      <!-- Login View -->
+      <div id="adminLoginView">
+        <div class="modal-header">
+          <i class="fa-solid fa-user-shield modal-icon"></i>
+          <h3>Admin Portal Login</h3>
+          <p>Authorised login for <code>berarnab@gmail.com</code> &amp; <code>tanmoysarkarvlogs@gmail.com</code></p>
+        </div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">Registered Admin Email</label>
+            <input type="email" id="loginEmail" placeholder="Enter admin email address" required />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Verify &amp; Enter</button>
+          <div id="loginMsg" class="error-msg"></div>
+        </form>
+      </div>
+
+      <!-- Dashboard View -->
+      <div id="adminDashboardView" class="hidden">
+        <div class="modal-header">
+          <h3><i class="fa-solid fa-sliders"></i> Post Manager Dashboard</h3>
+          <span id="activeAdminEmail" class="badge-tag"></span>
+          <button id="logoutBtn" class="btn btn-small btn-secondary">Logout</button>
+        </div>
+
+        <form id="postEditorForm">
+          <input type="hidden" id="postId" />
+          <div class="form-group">
+            <label for="postTitle">Post / Project Title</label>
+            <input type="text" id="postTitle" placeholder="e.g. Durga Puja Craft Film 2026" required />
+          </div>
+          <div class="form-group">
+            <label for="postDescription">Description</label>
+            <textarea id="postDescription" rows="3" placeholder="Write a short summary of the video assignment..." required></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="postKeywords">SEO Keywords</label>
+              <input type="text" id="postKeywords" placeholder="handloom, videography, durga puja" />
+            </div>
+            <div class="form-group">
+              <label for="postYtUrl">YouTube Video / Reel Link</label>
+              <input type="url" id="postYtUrl" placeholder="https://www.youtube.com/watch?v=..." required />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="savePostBtn"><i class="fa-solid fa-plus"></i> Publish Post</button>
+        </form>
+
+        <div class="admin-posts-summary">
+          <h4>Managed Posts</h4>
+          <div id="adminPostsList" class="admin-posts-list"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 <strong>Tanmay Sarkar</strong>. Video Journalist &amp; Digital Creator. All rights reserved.</p>
+      <p class="seo-keywords-footer">Specializing in Videography, Short Film Making, Durga Puja Visuals, Handloom &amp; Jewelry Product Marketing.</p>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript -->
   <script src="assets/js/main.js"></script>
 </body>
 </html>
