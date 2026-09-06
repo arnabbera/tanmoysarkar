@@ -3,15 +3,15 @@
 document.addEventListener('DOMContentLoaded', () => {
   const ADMIN_EMAILS = ["beraarnab@gmail.com", "tanmoysarkarvlogs@gmail.com"];
   const SESSION_KEY = "ts_admin_session";
-  const WORK_KEY = "ts_work_items_v4";
-  const MEMORIES_KEY = "ts_memories_items_v4";
-  const CREATIONS_KEY = "ts_creations_items_v4";
+  const WORK_KEY = "ts_work_items_v5";
+  const MEMORIES_KEY = "ts_memories_items_v5";
+  const CREATIONS_KEY = "ts_creations_items_v5";
 
-  // Default Items with Active, Fully-Playable YouTube Video Embeds
+  // Default Items with Mobile-Compatible Active YouTube Video Embeds
   const DEFAULT_WORK = [
-    { id: 'w1', section: 'work', title: 'Handloom Saree & Textile Heritage', category: 'Product Marketing', description: 'A promotional documentary capturing the delicate weaving process of authentic Indian handlooms and traditional weaves.', embedUrl: 'https://www.youtube.com/embed/2g811Eo7K8U', rawYtUrl: 'https://www.youtube.com/watch?v=2g811Eo7K8U' },
-    { id: 'w2', section: 'work', title: 'Durga Puja: The Heartbeat of Bengal', category: 'Cultural Documentary', description: 'Immersive short film showcasing the energy, devotion, artistic pandals, and rhythmic dhak beats during Durga Puja.', embedUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4', rawYtUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4' },
-    { id: 'w3', section: 'work', title: 'Handcrafted Jewelry & Royal Artisans', category: 'Commercial Film', description: 'High-definition product marketing reel highlighting intricate gold and silver craftsmanship for heritage jewelers.', embedUrl: 'https://www.youtube.com/embed/5qap5aO4i9A', rawYtUrl: 'https://www.youtube.com/watch?v=5qap5aO4i9A' }
+    { id: 'w1', section: 'work', title: 'Handloom Saree & Textile Heritage', category: 'Product Marketing', description: 'A promotional documentary capturing the delicate weaving process of authentic Indian handlooms and traditional weaves.', embedUrl: 'https://www.youtube.com/embed/2g811Eo7K8U?playsinline=1&rel=0&enablejsapi=1', rawYtUrl: 'https://www.youtube.com/watch?v=2g811Eo7K8U' },
+    { id: 'w2', section: 'work', title: 'Durga Puja: The Heartbeat of Bengal', category: 'Cultural Documentary', description: 'Immersive short film showcasing the energy, devotion, artistic pandals, and rhythmic dhak beats during Durga Puja.', embedUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4?playsinline=1&rel=0&enablejsapi=1', rawYtUrl: 'https://www.youtube.com/watch?v=ScMzIvxBSi4' },
+    { id: 'w3', section: 'work', title: 'Handcrafted Jewelry & Royal Artisans', category: 'Commercial Film', description: 'High-definition product marketing reel highlighting intricate gold and silver craftsmanship for heritage jewelers.', embedUrl: 'https://www.youtube.com/embed/5qap5aO4i9A?playsinline=1&rel=0&enablejsapi=1', rawYtUrl: 'https://www.youtube.com/watch?v=5qap5aO4i9A' }
   ];
 
   const DEFAULT_MEMORIES = [
@@ -124,7 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!url) return '';
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
-    return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url;
+    if (match && match[2].length === 11) {
+      return `https://www.youtube.com/embed/${match[2]}?playsinline=1&rel=0&enablejsapi=1`;
+    }
+    if (url.includes('youtube.com/embed/') && !url.includes('playsinline=1')) {
+      return url + (url.includes('?') ? '&playsinline=1&rel=0&enablejsapi=1' : '?playsinline=1&rel=0&enablejsapi=1');
+    }
+    return url;
   }
 
   /* =========================================================
@@ -456,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         ` : ''}
         <div class="video-container">
-          <iframe src="${item.embedUrl}" title="${item.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <iframe src="${item.embedUrl}" title="${item.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen playsinline referrerpolicy="strict-origin-when-cross-origin"></iframe>
         </div>
         <div class="card-body">
           <span class="category-badge">${item.category || 'Assignment'}</span>
