@@ -1,7 +1,7 @@
 // assets/js/main.js - Interactive Navigation & Admin Post Portal
 
 document.addEventListener('DOMContentLoaded', () => {
-  const ADMIN_EMAILS = ["berarnab@gmail.com", "tanmoysarkarvlogs@gmail.com"];
+  const ADMIN_EMAILS = ["beraarnab@gmail.com", "tanmoysarkarvlogs@gmail.com"];
   const SESSION_KEY = "ts_admin_session";
   const POSTS_KEY = "ts_admin_posts";
 

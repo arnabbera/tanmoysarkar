@@ -2,7 +2,7 @@
 // Handles admin login, session, and post CRUD using localStorage
 
 (function () {
-  const ADMIN_EMAILS = ["berarnab@gmail.com", "tanmoysarkarvlogs@gmail.com"];
+  const ADMIN_EMAILS = ["beraarnab@gmail.com", "tanmoysarkarvlogs@gmail.com"];
   const SESSION_KEY = "adminSession"; // stores logged‑in email
   const POSTS_KEY = "adminPosts"; // JSON array of post objects
 
