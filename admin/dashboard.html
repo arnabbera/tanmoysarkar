@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – Tanmay Sarkar</title>
+  <link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+  <div class="admin-container">
+    <h2>Admin Dashboard</h2>
+    <form id="postForm">
+      <label>Title</label>
+      <input type="text" id="title" required />
+      <label>Description</label>
+      <textarea id="description" rows="3" required></textarea>
+      <label>SEO Keywords (comma separated)</label>
+      <input type="text" id="keywords" />
+      <label>YouTube Video URL</label>
+      <input type="url" id="ytUrl" placeholder="https://www.youtube.com/watch?v=..." required />
+      <button type="submit">Save Post</button>
+    </form>
+    <hr />
+    <h3>Existing Posts</h3>
+    <div id="postsList"></div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

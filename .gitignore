@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+.idea/
+.vscode/
+*.log
+dist/
+build/
+# OS generated files
+Thumbs.db
+Desktop.ini
+# Generated hero image (optional to keep local only)
+hero_banner_*.png
