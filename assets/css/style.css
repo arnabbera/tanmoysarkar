@@ -48,6 +48,34 @@ h1, h2, h3, h4, .brand-logo {
   font-family: 'Outfit', sans-serif;
 }
 
+/* Admin Quick Banner at Top */
+.admin-bar {
+  background: linear-gradient(90deg, #111827, #1e1b4b);
+  border-bottom: 1px solid rgba(78, 110, 242, 0.4);
+  padding: 0.5rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  font-size: 0.85rem;
+}
+
+.admin-bar-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-bar-content strong {
+  color: var(--cyan-accent);
+}
+
+.admin-bar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
 /* Header & Glass Navbar */
 .navbar-header {
   position: fixed;
@@ -61,6 +89,15 @@ h1, h2, h3, h4, .brand-logo {
   border-bottom: 1px solid var(--border-glass);
   padding: 0.8rem 1.5rem;
   transition: all 0.3s ease;
+}
+
+/* Push navbar down when admin bar is active */
+body.admin-mode .navbar-header {
+  top: 40px;
+}
+
+body.admin-mode .hero {
+  padding-top: 8rem;
 }
 
 .nav-container {
@@ -319,10 +356,35 @@ h1, h2, h3, h4, .brand-logo {
   margin-bottom: 3rem;
 }
 
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+}
+
 .section-title {
   font-size: clamp(2rem, 4vw, 2.75rem);
   font-weight: 700;
   margin-bottom: 0.5rem;
+}
+
+.admin-inline-add-btn {
+  background: rgba(0, 242, 254, 0.15);
+  color: var(--cyan-accent);
+  border: 1px solid rgba(0, 242, 254, 0.4);
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-inline-add-btn:hover {
+  background: var(--cyan-accent);
+  color: #090d16;
 }
 
 .section-subtitle {
@@ -340,6 +402,7 @@ h1, h2, h3, h4, .brand-logo {
   padding: 1.8rem;
   box-shadow: var(--shadow-card);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
 }
 
 .glass-card:hover {
@@ -347,6 +410,40 @@ h1, h2, h3, h4, .brand-logo {
   border-color: var(--border-hover);
   transform: translateY(-5px);
   box-shadow: var(--shadow-glow);
+}
+
+/* In-Card Admin Overlay Toolbar */
+.card-admin-toolbar {
+  display: flex;
+  gap: 0.4rem;
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  z-index: 10;
+  background: rgba(9, 13, 22, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 0.3rem 0.6rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.card-admin-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.card-admin-btn.edit-btn:hover {
+  color: var(--cyan-accent);
+}
+
+.card-admin-btn.delete-btn:hover {
+  color: #ff6b6b;
 }
 
 /* About Grid */
@@ -385,7 +482,6 @@ h1, h2, h3, h4, .brand-logo {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   gap: 2rem;
-  margin-bottom: 2rem;
 }
 
 .work-card {
@@ -501,6 +597,7 @@ h1, h2, h3, h4, .brand-logo {
 .icon-youtube { color: #ff0000; }
 .icon-food { color: #ff9f1c; }
 .icon-blog { color: #2ec4b6; }
+.icon-web { color: #4e6ef2; }
 
 .channel-handle {
   color: var(--cyan-accent);
@@ -628,7 +725,7 @@ h1, h2, h3, h4, .brand-logo {
 
 .modal-card {
   width: 100%;
-  max-width: 580px;
+  max-width: 620px;
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
@@ -675,7 +772,7 @@ h1, h2, h3, h4, .brand-logo {
   font-weight: 500;
 }
 
-.form-group input, .form-group textarea {
+.form-group input, .form-group textarea, .form-select {
   width: 100%;
   padding: 0.75rem 1rem;
   background: rgba(255, 255, 255, 0.05);
@@ -687,7 +784,12 @@ h1, h2, h3, h4, .brand-logo {
   transition: border-color 0.2s ease;
 }
 
-.form-group input:focus, .form-group textarea:focus {
+.form-select option {
+  background: #111827;
+  color: #fff;
+}
+
+.form-group input:focus, .form-group textarea:focus, .form-select:focus {
   outline: none;
   border-color: var(--cyan-accent);
 }
