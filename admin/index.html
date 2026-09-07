@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal – Tanmoy Sarkar</title>
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- Fonts & Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/style.css" />
+  <link rel="stylesheet" href="admin-portal.css" />
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       LOGIN GATE — Shown when admin is NOT logged in
+       ============================================================ -->
+  <div id="loginGate" class="login-gate">
+    <div class="login-gate-card glass-card">
+      <div class="login-gate-header">
+        <i class="fa-solid fa-clapperboard logo-icon" style="font-size:2rem;color:var(--cyan-accent);"></i>
+        <h2>Tanmoy<span class="logo-accent">Sarkar</span></h2>
+        <p class="login-gate-sub">Admin Portal</p>
+      </div>
+      <div class="modal-header" style="margin-bottom:1rem;">
+        <i class="fa-solid fa-user-shield modal-icon"></i>
+        <h3>Sign In to Admin</h3>
+        <p>Enter your registered admin email to access the portal.</p>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Admin Email Address</label>
+          <input type="email" id="loginEmail" placeholder="admin@example.com" required />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+        <div id="loginMsg" class="error-msg"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       ADMIN PORTAL — Shown when admin IS logged in
+       ============================================================ -->
+  <div id="adminPortal" class="hidden">
+
+    <!-- Admin Top Bar -->
+    <div class="admin-bar">
+      <div class="admin-bar-content">
+        <span><i class="fa-solid fa-user-check"></i> Admin Mode: <strong id="adminBarEmail"></strong></span>
+        <div class="admin-bar-actions">
+          <a href="../index.html" target="_blank" class="btn btn-small btn-secondary">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> View Live Site
+          </a>
+          <button id="adminBarAddBtn" class="btn btn-small btn-primary">
+            <i class="fa-solid fa-plus"></i> Add New Content
+          </button>
+          <button id="adminBarLogoutBtn" class="btn btn-small btn-secondary">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Bar (same as main site) -->
+    <header class="navbar-header" style="top:40px;">
+      <div class="nav-container">
+        <a href="#hero" class="brand-logo">
+          <i class="fa-solid fa-clapperboard logo-icon"></i>
+          <span>Tanmoy<span class="logo-accent">Sarkar</span></span>
+        </a>
+
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <nav class="nav-tabs" id="navTabs">
+          <a href="#about" class="tab active"><i class="fa-solid fa-user"></i> About</a>
+          <a href="#work" class="tab"><i class="fa-solid fa-film"></i> My Work</a>
+          <a href="#memories" class="tab"><i class="fa-solid fa-heart"></i> Memories</a>
+          <a href="#creations" class="tab"><i class="fa-brands fa-youtube"></i> My Creations</a>
+          <a href="#contact" class="tab"><i class="fa-solid fa-paper-plane"></i> Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ======= HERO SECTION (same as main site) ======= -->
+    <section class="hero" id="hero" style="padding-top:8rem;">
+      <div class="hero-container">
+
+        <!-- Left Column -->
+        <div class="hero-left">
+          <div class="badge-tag"><i class="fa-solid fa-camera"></i> Video Journalist &amp; Digital Creator</div>
+          <h1 class="hero-title">Uncovering the <span class="text-gradient">Soul of India</span></h1>
+          <p class="hero-subtitle">
+            From the vibrant rhythm of <strong>Durga Puja</strong> and street flavors to timeless <strong>Monuments &amp; Mandirs</strong>. Crafting digital memories and product marketing films for <strong>Handlooms, Handicrafts &amp; Jewelry</strong>.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#work" class="btn btn-primary"><i class="fa-solid fa-play"></i> Explore Work</a>
+            <a href="#contact" class="btn btn-secondary"><i class="fa-solid fa-envelope"></i> Discuss Project</a>
+          </div>
+
+          <div class="hero-features-bar">
+            <span>DURGA PUJA</span> &bull; <span>HANDLOOMS</span> &bull; <span>JEWELRY</span> &bull; <span>SHORT FILMS</span>
+          </div>
+
+          <div class="location-pills">
+            <span><i class="fa-solid fa-location-dot"></i> Kolkata &amp; Mumbai</span>
+            <span><i class="fa-solid fa-plane"></i> Available Pan-India</span>
+          </div>
+        </div>
+
+        <!-- Right Column: Hero Image -->
+        <div class="hero-right">
+          <div class="hero-banner-frame">
+            <img src="../assets/images/hero_banner.png" alt="Tanmoy Sarkar Videography Banner" class="hero-banner-img" />
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======= MAIN CONTENT ======= -->
+    <main class="main-content">
+
+      <!-- About Section -->
+      <section id="about" class="content-section">
+        <div class="section-header">
+          <h2 class="section-title">About Me</h2>
+          <p class="section-subtitle">Documenting traditions, culture, and craftsmanship across India</p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-card glass-card">
+            <div class="icon-box"><i class="fa-solid fa-camera-retro"></i></div>
+            <h3>Video Journalism &amp; Short Films</h3>
+            <p>
+              I am a Video Journalist and Digital Creator dedicated to capturing the Indian spirit. With a passion for authentic visual storytelling, my lens focuses on cultural festivals—especially Kolkata's majestic <strong>Durga Puja</strong>, heritage monuments, sacred mandirs, and local street flavors.
+            </p>
+          </div>
+
+          <div class="about-card glass-card">
+            <div class="icon-box"><i class="fa-solid fa-vest-patches"></i></div>
+            <h3>Handlooms &amp; Handicrafts Marketing</h3>
+            <p>
+              I partner with artisans, heritage brands, and craftsmen to create high-impact commercial and promotional films for <strong>Handloom Sarees, Jewelry, Traditional Crafts</strong>, and luxury fashion products.
+            </p>
+          </div>
+
+          <div class="about-card glass-card">
+            <div class="icon-box"><i class="fa-solid fa-earth-asia"></i></div>
+            <h3>Pan-India Presence</h3>
+            <p>
+              Based out of <strong>Kolkata</strong> and <strong>Mumbai</strong>, I am fully equipped and available for on-location filming, documentary shoots, and brand assignments anywhere across India.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- My Work Section -->
+      <section id="work" class="content-section">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">My Work</h2>
+            <button class="admin-inline-add-btn" data-section="work">
+              <i class="fa-solid fa-plus"></i> Add Work
+            </button>
+          </div>
+          <p class="section-subtitle">Explore featured video assignments, promotional films, and creator updates</p>
+        </div>
+
+        <div id="workGrid" class="work-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- Memories Section -->
+      <section id="memories" class="content-section">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">Memories</h2>
+            <button class="admin-inline-add-btn" data-section="memories">
+              <i class="fa-solid fa-plus"></i> Add Memory
+            </button>
+          </div>
+          <p class="section-subtitle">Moments captured in time — Festivals, Mandirs, and Monuments</p>
+        </div>
+
+        <div id="memoriesGrid" class="memories-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- My Creations Section -->
+      <section id="creations" class="content-section">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <h2 class="section-title">My Creations</h2>
+            <button class="admin-inline-add-btn" data-section="creations">
+              <i class="fa-solid fa-plus"></i> Add Channel / Link
+            </button>
+          </div>
+          <p class="section-subtitle">Explore my official YouTube channels and digital content hubs</p>
+        </div>
+
+        <div id="creationsGrid" class="creations-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section id="contact" class="content-section">
+        <div class="section-header">
+          <h2 class="section-title">Get In Touch</h2>
+          <p class="section-subtitle">Let's collaborate on your next digital film, commercial, or creative project</p>
+        </div>
+
+        <div class="contact-wrapper">
+          <div class="contact-info-card glass-card">
+            <h3>Business &amp; Collaboration Inquiries</h3>
+            <p>Reach out directly for commercial assignments, product marketing films, or festival documentation.</p>
+
+            <ul class="contact-details-list">
+              <li>
+                <div class="detail-icon"><i class="fa-solid fa-envelope"></i></div>
+                <div>
+                  <strong>Email</strong>
+                  <a href="mailto:tanmoysarkarvlogs@gmail.com">tanmoysarkarvlogs@gmail.com</a>
+                </div>
+              </li>
+              <li>
+                <div class="detail-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                <div>
+                  <strong>WhatsApp / Call</strong>
+                  <a href="https://wa.me/919892880497" target="_blank">+91 9892880497</a>
+                </div>
+              </li>
+              <li>
+                <div class="detail-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                <div>
+                  <strong>Base Locations</strong>
+                  <span>Kolkata &amp; Mumbai (Travel available Pan-India)</span>
+                </div>
+              </li>
+            </ul>
+
+            <div class="social-links-grid">
+              <a href="https://www.tanmoysarkar.com" target="_blank" class="social-btn" title="Official Website"><i class="fa-solid fa-globe"></i></a>
+              <a href="https://facebook.com/tanmoysarkarproductions" target="_blank" class="social-btn" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+              <a href="https://twitter.com/tanmoyforever" target="_blank" class="social-btn" title="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+              <a href="https://youtube.com/@tanmoysarkarsarees" target="_blank" class="social-btn" title="YouTube Fashion"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="footer-container">
+        <p>&copy; 2026 <strong>Tanmoy Sarkar</strong>. Video Journalist &amp; Digital Creator. All rights reserved.</p>
+        <p class="built-by-credit">Site built by <a href="https://www.emplementer.com/" target="_blank" rel="noopener">Emplementer</a></p>
+        <p class="seo-keywords-footer">Specializing in Videography, Short Film Making, Durga Puja Visuals, Handloom &amp; Jewelry Product Marketing.</p>
+      </div>
+    </footer>
+
+  </div><!-- end #adminPortal -->
+
+
+  <!-- ============================================================
+       CONTENT EDITOR MODAL (slide-in panel)
+       ============================================================ -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-card glass-card">
+      <button class="modal-close" id="closeAdminModal">&times;</button>
+
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-sliders"></i> Content Editor</h3>
+        <span id="activeAdminEmail" class="badge-tag"></span>
+      </div>
+
+      <form id="postEditorForm">
+        <input type="hidden" id="postId" />
+
+        <!-- Target Section Selection -->
+        <div class="form-group">
+          <label for="targetSection">Section</label>
+          <select id="targetSection" class="form-select" required>
+            <option value="work">🎬 My Work (Video Reel / Assignment)</option>
+            <option value="memories">📸 Memories (Festival / Monument / Street Photo or Video)</option>
+            <option value="creations">📺 My Creations (YouTube Channel / Digital Hub)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="postTitle">Title</label>
+          <input type="text" id="postTitle" placeholder="e.g. Durga Puja Festival Film or Saree Channel" required />
+        </div>
+
+        <div class="form-group">
+          <label for="postDescription">Description</label>
+          <textarea id="postDescription" rows="3" placeholder="Write a short description..." required></textarea>
+        </div>
+
+        <!-- Work specific fields -->
+        <div id="workFieldsGroup" class="section-field-group">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="workCategory">Category / Badge</label>
+              <input type="text" id="workCategory" placeholder="e.g. Product Marketing, Short Film" />
+            </div>
+            <div class="form-group">
+              <label for="workYtUrl">YouTube Video URL</label>
+              <input type="url" id="workYtUrl" placeholder="https://www.youtube.com/watch?v=..." />
+            </div>
+          </div>
+        </div>
+
+        <!-- Memories specific fields -->
+        <div id="memoriesFieldsGroup" class="section-field-group hidden">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="memoryTag">Memory Tag / Icon Label</label>
+              <input type="text" id="memoryTag" placeholder="e.g. Temple Heritage, Street Flavors" />
+            </div>
+            <div class="form-group">
+              <label for="memoryMediaUrl">Image URL or YouTube Video Link</label>
+              <input type="url" id="memoryMediaUrl" placeholder="https://... or YouTube link" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Creations specific fields -->
+        <div id="creationsFieldsGroup" class="section-field-group hidden">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="creationHandle">Channel Handle / Subtitle</label>
+              <input type="text" id="creationHandle" placeholder="e.g. @tanmoysarkarsarees" />
+            </div>
+            <div class="form-group">
+              <label for="creationUrl">Channel / Website URL</label>
+              <input type="url" id="creationUrl" placeholder="https://youtube.com/@..." />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="creationIconStyle">Icon Style</label>
+            <select id="creationIconStyle" class="form-select">
+              <option value="youtube">🔴 YouTube (Fashion / Video)</option>
+              <option value="food">🍲 Food &amp; Flavors</option>
+              <option value="blog">📝 Blog &amp; Stories</option>
+              <option value="web">🌐 Website / Link</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="savePostBtn">
+          <i class="fa-solid fa-plus"></i> Save Item
+        </button>
+      </form>
+
+      <div class="admin-posts-summary">
+        <h4>All Managed Content</h4>
+        <div id="adminPostsList" class="admin-posts-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Admin Portal JavaScript -->
+  <script src="admin-portal.js"></script>
+</body>
+</html>

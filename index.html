@@ -28,17 +28,6 @@
 </head>
 <body>
 
-  <!-- Admin Quick Banner (visible only when logged in) -->
-  <div id="adminBar" class="admin-bar hidden">
-    <div class="admin-bar-content">
-      <span><i class="fa-solid fa-user-check"></i> Admin Mode Active: <strong id="adminBarEmail"></strong></span>
-      <div class="admin-bar-actions">
-        <button id="adminBarAddBtn" class="btn btn-small btn-primary"><i class="fa-solid fa-plus"></i> Add New Content</button>
-        <button id="adminBarLogoutBtn" class="btn btn-small btn-secondary"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Navigation Bar -->
   <header class="navbar-header">
     <div class="nav-container">
@@ -57,12 +46,11 @@
         <a href="#memories" class="tab"><i class="fa-solid fa-heart"></i> Memories</a>
         <a href="#creations" class="tab"><i class="fa-brands fa-youtube"></i> My Creations</a>
         <a href="#contact" class="tab"><i class="fa-solid fa-paper-plane"></i> Contact</a>
-        <button class="admin-nav-btn" id="adminModalBtn"><i class="fa-solid fa-user-gear"></i> Admin</button>
       </nav>
     </div>
   </header>
 
-  <!-- Hero Section (2-Column Split Layout matching attached picture) -->
+  <!-- Hero Section (2-Column Split Layout like Emplementer) -->
   <section class="hero" id="hero">
     <div class="hero-container">
       
@@ -228,124 +216,6 @@
     </section>
 
   </main>
-
-  <!-- Admin Modal / Portal -->
-  <div class="modal-overlay" id="adminModal">
-    <div class="modal-card glass-card">
-      <button class="modal-close" id="closeAdminModal">&times;</button>
-      
-      <!-- Login View -->
-      <div id="adminLoginView">
-        <div class="modal-header">
-          <i class="fa-solid fa-user-shield modal-icon"></i>
-          <h3>Admin Portal Login</h3>
-          <p>Please enter your registered admin email address to log in.</p>
-        </div>
-
-        <form id="loginForm">
-          <div class="form-group">
-            <label for="loginEmail">Registered Admin Email</label>
-            <input type="email" id="loginEmail" placeholder="Enter admin email address" required />
-          </div>
-          <button type="submit" class="btn btn-primary btn-block">Verify &amp; Enter</button>
-          <div id="loginMsg" class="error-msg"></div>
-        </form>
-      </div>
-
-      <!-- Dashboard View -->
-      <div id="adminDashboardView" class="hidden">
-        <div class="modal-header">
-          <h3><i class="fa-solid fa-sliders"></i> Admin Content Editor</h3>
-          <span id="activeAdminEmail" class="badge-tag"></span>
-          <button id="logoutBtn" class="btn btn-small btn-secondary"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-        </div>
-
-        <form id="postEditorForm">
-          <input type="hidden" id="postId" />
-
-          <!-- Target Section Selection -->
-          <div class="form-group">
-            <label for="targetSection">Target Section to Edit / Add To</label>
-            <select id="targetSection" class="form-select" required>
-              <option value="work">🎬 My Work (Video Reel / Assignment)</option>
-              <option value="memories">📸 Memories (Festival / Monument / Street Photo or Video)</option>
-              <option value="creations">📺 My Creations (YouTube Channel / Digital Hub)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="postTitle">Title</label>
-            <input type="text" id="postTitle" placeholder="e.g. Durga Puja Festival Film or Saree Channel" required />
-          </div>
-
-          <div class="form-group">
-            <label for="postDescription">Description</label>
-            <textarea id="postDescription" rows="3" placeholder="Write a short description..." required></textarea>
-          </div>
-
-          <!-- Dynamic Fields based on section -->
-          <!-- Work specific fields -->
-          <div id="workFieldsGroup" class="section-field-group">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="workCategory">Category / Badge</label>
-                <input type="text" id="workCategory" placeholder="e.g. Product Marketing, Short Film" />
-              </div>
-              <div class="form-group">
-                <label for="workYtUrl">YouTube Video URL</label>
-                <input type="url" id="workYtUrl" placeholder="https://www.youtube.com/watch?v=..." />
-              </div>
-            </div>
-          </div>
-
-          <!-- Memories specific fields -->
-          <div id="memoriesFieldsGroup" class="section-field-group hidden">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="memoryTag">Memory Tag / Icon Label</label>
-                <input type="text" id="memoryTag" placeholder="e.g. Temple Heritage, Street Flavors" />
-              </div>
-              <div class="form-group">
-                <label for="memoryMediaUrl">Image URL or YouTube Video Link</label>
-                <input type="url" id="memoryMediaUrl" placeholder="https://... or YouTube link" />
-              </div>
-            </div>
-          </div>
-
-          <!-- Creations specific fields -->
-          <div id="creationsFieldsGroup" class="section-field-group hidden">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="creationHandle">Channel Handle / Subtitle</label>
-                <input type="text" id="creationHandle" placeholder="e.g. @tanmoysarkarsarees" />
-              </div>
-              <div class="form-group">
-                <label for="creationUrl">Channel / Website URL</label>
-                <input type="url" id="creationUrl" placeholder="https://youtube.com/@..." />
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="creationIconStyle">Icon Style</label>
-              <select id="creationIconStyle" class="form-select">
-                <option value="youtube">🔴 YouTube (Fashion / Video)</option>
-                <option value="food">🍲 Food &amp; Flavors</option>
-                <option value="blog">📝 Blog &amp; Stories</option>
-                <option value="web">🌐 Website / Link</option>
-              </select>
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-primary btn-block" id="savePostBtn"><i class="fa-solid fa-plus"></i> Save Item</button>
-        </form>
-
-        <div class="admin-posts-summary">
-          <h4>Managed Content Items</h4>
-          <div id="adminPostsList" class="admin-posts-list"></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
 
   <!-- Footer -->
   <footer class="site-footer">
