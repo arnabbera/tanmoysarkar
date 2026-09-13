@@ -97,3 +97,46 @@
 #adminPortal .hero {
   padding-top: 8rem;
 }
+
+/* ============================================================
+   PUBLISH PANEL
+   ============================================================ */
+.publish-panel {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 242, 254, 0.2);
+}
+
+.publish-panel h4 {
+  font-size: 1rem;
+  margin-bottom: 0.6rem;
+  color: var(--cyan-accent);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.publish-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.publish-status {
+  margin-top: 0.8rem;
+  font-size: 0.88rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-sm);
+  display: none;
+}
+
+.publish-status:not(:empty) {
+  display: block;
+}
+
+.publish-info    { color: var(--text-muted); background: transparent; }
+.publish-success { color: #4ade80; background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.25); }
+.publish-error   { color: #ff6b6b; background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.25); }
+.publish-warn    { color: var(--gold-accent); background: rgba(255, 183, 3, 0.1); border: 1px solid rgba(255, 183, 3, 0.25); }
+

@@ -550,6 +550,26 @@ body.admin-mode .hero {
   border: 0;
 }
 
+/* Placeholder shown when no video URL is set */
+.video-placeholder {
+  height: 200px;
+  background: rgba(18, 24, 40, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.video-placeholder i {
+  font-size: 2.5rem;
+  color: rgba(255, 0, 0, 0.3);
+}
+
+
 .work-card .card-body {
   padding: 1.5rem;
   flex: 1;

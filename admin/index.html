@@ -371,10 +371,38 @@
         <div id="adminPostsList" class="admin-posts-list"></div>
       </div>
 
+      <!-- ── Publish Panel ────────────────────────────────────── -->
+      <div class="publish-panel">
+        <h4><i class="fa-solid fa-cloud-arrow-up"></i> Publish to All Devices</h4>
+        <p class="publish-info">
+          Enter your GitHub Personal Access Token to push changes to the repo.
+          Once published, <strong>all devices</strong> (mobile, laptop, etc.) will show the
+          updated content within ~1 minute.
+        </p>
+        <div class="form-group">
+          <label for="ghTokenInput">GitHub Personal Access Token</label>
+          <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+            autocomplete="off" />
+          <small style="color:var(--text-dim);font-size:0.78rem;margin-top:0.3rem;display:block;">
+            Create one at
+            <a href="https://github.com/settings/tokens/new?scopes=contents&description=TanmoySarkarAdmin"
+               target="_blank" style="color:var(--cyan-accent);">GitHub → Settings → Developer settings → Tokens (classic)</a>
+            with <strong>repo → contents</strong> scope.
+          </small>
+        </div>
+        <button id="publishBtn" class="btn btn-primary btn-block">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Publish to All Devices
+        </button>
+        <div id="publishStatus" class="publish-status"></div>
+      </div>
+
     </div>
   </div>
 
+  <!-- data.js must load before admin-portal.js so SITE_DATA is available -->
+  <script src="../assets/js/data.js"></script>
   <!-- Admin Portal JavaScript -->
   <script src="admin-portal.js"></script>
 </body>
 </html>
+
