@@ -9,18 +9,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const GH_BRANCH     = "main";
 
   // ----------------------------------------------------------------
-  // In-memory content state (loaded from SITE_DATA in data.js)
+  // In-memory content state
   // ----------------------------------------------------------------
-  let siteData = {
-    work: [],
-    memories: [],
-    creations: []
-  };
+  let siteData = { work: [], memories: [], creations: [] };
+  let migratedFromLocalStorage = false;
 
-  // Load initial data from data.js (loaded via <script> in index.html)
+  // Old localStorage keys from the previous system
+  const OLD_WORK_KEY      = "ts_work_items_v2";
+  const OLD_MEMORIES_KEY  = "ts_memories_items_v2";
+  const OLD_CREATIONS_KEY = "ts_creations_items_v2";
+
   function loadSiteData() {
+    // Step 1: Start with repo data.js as the base
     if (typeof SITE_DATA !== 'undefined') {
-      siteData = JSON.parse(JSON.stringify(SITE_DATA)); // deep clone
+      siteData = JSON.parse(JSON.stringify(SITE_DATA));
+    }
+
+    // Step 2: Check if the OLD localStorage has user-edited data
+    // If it does, prefer it — this recovers links that were saved before
+    // the new system was deployed
+    try {
+      const lsWork      = localStorage.getItem(OLD_WORK_KEY);
+      const lsMemories  = localStorage.getItem(OLD_MEMORIES_KEY);
+      const lsCreations = localStorage.getItem(OLD_CREATIONS_KEY);
+
+      const hasOldData = lsWork || lsMemories || lsCreations;
+
+      if (hasOldData) {
+        // Merge localStorage data — it takes priority over data.js defaults
+        if (lsWork)      siteData.work      = JSON.parse(lsWork);
+        if (lsMemories)  siteData.memories  = JSON.parse(lsMemories);
+        if (lsCreations) siteData.creations = JSON.parse(lsCreations);
+        migratedFromLocalStorage = true;
+      }
+    } catch (e) {
+      console.warn('Could not read old localStorage data:', e);
     }
   }
 
@@ -113,6 +136,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ghTokenInput && getStoredToken()) ghTokenInput.value = getStoredToken();
     renderAllSections();
     initNavigation();
+
+    // If we found old localStorage data, alert the admin to publish it now
+    if (migratedFromLocalStorage) {
+      // Open the editor modal straight to the publish panel
+      if (adminModal) adminModal.classList.add('active');
+      setPublishStatus(
+        '🔴 Your previously saved links have been recovered from this browser! ' +
+        'Click "Publish to All Devices" below to save them permanently to GitHub ' +
+        'so they appear on all devices (mobile, laptop, etc.).',
+        'warn'
+      );
+      // Scroll publish panel into view after a short delay
+      setTimeout(() => {
+        const panel = document.querySelector('.publish-panel');
+        if (panel) panel.scrollIntoView({ behavior: 'smooth' });
+      }, 400);
+    }
   }
 
   // ----------------------------------------------------------------
@@ -229,6 +269,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setPublishStatus('✅ Published! All devices will show the update in ~1 minute.', 'success');
         // Save token for this session
         sessionStorage.setItem('ts_gh_token', token);
+        // Clear old localStorage now that data is safely in GitHub
+        localStorage.removeItem(OLD_WORK_KEY);
+        localStorage.removeItem(OLD_MEMORIES_KEY);
+        localStorage.removeItem(OLD_CREATIONS_KEY);
+        migratedFromLocalStorage = false;
         return true;
       } else {
         const err = await putRes.json();
