@@ -58,7 +58,10 @@
           <a href="../index.html" target="_blank" class="btn btn-small btn-secondary">
             <i class="fa-solid fa-arrow-up-right-from-square"></i> View Live Site
           </a>
-          <button id="adminBarAddBtn" class="btn btn-small btn-primary">
+          <button id="adminBarSyncBtn" class="btn btn-small btn-primary" style="background:linear-gradient(135deg, #00f2fe, #4facfe); color:#030b1e; font-weight:700; border:none;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Sync to Mobile
+          </button>
+          <button id="adminBarAddBtn" class="btn btn-small btn-secondary">
             <i class="fa-solid fa-plus"></i> Add New Content
           </button>
           <button id="adminBarLogoutBtn" class="btn btn-small btn-secondary">
@@ -371,31 +374,62 @@
         <div id="adminPostsList" class="admin-posts-list"></div>
       </div>
 
-      <!-- ── Publish Panel ────────────────────────────────────── -->
-      <div class="publish-panel">
-        <h4><i class="fa-solid fa-cloud-arrow-up"></i> Publish to All Devices</h4>
-        <p class="publish-info">
-          Enter your GitHub Personal Access Token to push changes to the repo.
-          Once published, <strong>all devices</strong> (mobile, laptop, etc.) will show the
-          updated content within ~1 minute.
-        </p>
-        <div class="form-group">
-          <label for="ghTokenInput">GitHub Personal Access Token</label>
-          <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-            autocomplete="off" />
-          <small style="color:var(--text-dim);font-size:0.78rem;margin-top:0.3rem;display:block;">
-            Create one at
-            <a href="https://github.com/settings/tokens/new?scopes=contents&description=TanmoySarkarAdmin"
-               target="_blank" style="color:var(--cyan-accent);">GitHub → Settings → Developer settings → Tokens (classic)</a>
-            with <strong>repo → contents</strong> scope.
-          </small>
-        </div>
-        <button id="publishBtn" class="btn btn-primary btn-block">
-          <i class="fa-solid fa-cloud-arrow-up"></i> Publish to All Devices
-        </button>
-        <div id="publishStatus" class="publish-status"></div>
-      </div>
+      <!-- Save feedback notice inside modal -->
+      <div id="modalSaveFeedback" class="publish-status" style="margin-top:1rem;"></div>
 
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SYNC & PUBLISH MODAL (Sync to Mobile / All Devices)
+       ============================================================ -->
+  <div id="syncModal" class="modal-overlay">
+    <div class="modal-card glass-card" style="max-width:560px;">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-cloud-arrow-up" style="color:var(--cyan-accent); margin-right:0.5rem;"></i> Sync Website to Mobile</h3>
+        <button class="modal-close" id="closeSyncModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.2rem; line-height:1.6;">
+          Your changes are <strong>always saved locally on this browser</strong>. To make your videos and updates show up on <strong>mobile phones and to all visitors</strong>, sync with GitHub.
+        </p>
+
+        <!-- Method 1: Automatic 1-Click Sync -->
+        <div style="background:rgba(0, 242, 254, 0.05); border:1px solid rgba(0, 242, 254, 0.25); border-radius:var(--radius-sm); padding:1.2rem; margin-bottom:1.2rem;">
+          <h4 style="color:var(--cyan-accent); font-size:0.98rem; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.5rem;">
+            <i class="fa-solid fa-bolt"></i> Option 1: 1-Click Sync (Recommended)
+          </h4>
+          <p style="font-size:0.83rem; color:var(--text-dim); margin-bottom:0.8rem; line-height:1.5;">
+            Enter your GitHub token once. It stays saved in this browser so you can sync anytime with a single click.
+          </p>
+          <div class="form-group" style="margin-bottom:0.8rem;">
+            <label for="ghTokenInput" style="font-size:0.82rem;">GitHub Personal Access Token</label>
+            <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+            <small style="color:var(--text-dim); font-size:0.75rem; margin-top:0.35rem; display:block; line-height:1.4;">
+              Need a token? <a href="https://github.com/settings/tokens/new?scopes=repo&description=TanmoySarkarAdmin" target="_blank" style="color:var(--cyan-accent); text-decoration:underline;">Click here to create one on GitHub</a> (select <strong>repo</strong> scope).
+            </small>
+          </div>
+          <button id="publishBtn" class="btn btn-primary btn-block" style="font-weight:700;">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Sync to GitHub &amp; Mobile Now
+          </button>
+          <div id="publishStatus" class="publish-status"></div>
+        </div>
+
+        <!-- Method 2: One-Click Copy -->
+        <div style="background:rgba(255, 255, 255, 0.03); border:1px solid var(--border-glass); border-radius:var(--radius-sm); padding:1.1rem;">
+          <h4 style="font-size:0.95rem; margin-bottom:0.4rem; display:flex; align-items:center; gap:0.5rem;">
+            <i class="fa-solid fa-clipboard"></i> Option 2: Copy Content Code
+          </h4>
+          <p style="font-size:0.82rem; color:var(--text-dim); margin-bottom:0.8rem;">
+            Don't have a token? Copy the current site data and paste it in the chat with your AI assistant to commit it directly.
+          </p>
+          <button id="copyDataBtn" class="btn btn-secondary btn-block">
+            <i class="fa-solid fa-copy"></i> Copy Site Data to Clipboard
+          </button>
+          <div id="copyStatus" style="font-size:0.82rem; color:#4ade80; margin-top:0.5rem; display:none; padding:0.4rem 0.6rem; background:rgba(74, 222, 128, 0.1); border-radius:4px;"></div>
+        </div>
+
+      </div>
     </div>
   </div>
 

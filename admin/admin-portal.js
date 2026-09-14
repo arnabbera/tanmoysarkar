@@ -1,49 +1,105 @@
 // admin/admin-portal.js
-// Admin portal: login gate + GitHub API push to data.js so ALL devices stay in sync
+// Handles admin login, in-browser persistent CRUD, and 1-click GitHub sync for mobile devices
 
 document.addEventListener('DOMContentLoaded', () => {
   const ADMIN_EMAILS  = ["beraarnab@gmail.com", "tanmoysarkarvlogs@gmail.com"];
   const SESSION_KEY   = "ts_admin_session";
-  const GH_REPO       = "arnabbera/tanmoysarkar";          // GitHub repo
-  const GH_FILE_PATH  = "assets/js/data.js";               // file to update
+  const STORAGE_KEY   = "ts_site_data";
+  const GH_REPO       = "arnabbera/tanmoysarkar";
+  const GH_FILE_PATH  = "assets/js/data.js";
   const GH_BRANCH     = "main";
+
+  // Legacy keys for backwards compatibility and recovery
+  const OLD_WORK_KEY      = "ts_work_items_v2";
+  const OLD_MEMORIES_KEY  = "ts_memories_items_v2";
+  const OLD_CREATIONS_KEY = "ts_creations_items_v2";
+  const OLD_POSTS_KEY     = "adminPosts";
 
   // ----------------------------------------------------------------
   // In-memory content state
   // ----------------------------------------------------------------
-  let siteData = { work: [], memories: [], creations: [] };
-  let migratedFromLocalStorage = false;
+  let siteData = {
+    work: [],
+    memories: [],
+    creations: []
+  };
 
-  // Old localStorage keys from the previous system
-  const OLD_WORK_KEY      = "ts_work_items_v2";
-  const OLD_MEMORIES_KEY  = "ts_memories_items_v2";
-  const OLD_CREATIONS_KEY = "ts_creations_items_v2";
-
+  // ----------------------------------------------------------------
+  // Content Loading & Persistence (Guarantees data is NEVER lost)
+  // ----------------------------------------------------------------
   function loadSiteData() {
-    // Step 1: Start with repo data.js as the base
-    if (typeof SITE_DATA !== 'undefined') {
+    // 1. Start with repo defaults
+    if (typeof SITE_DATA !== 'undefined' && SITE_DATA) {
       siteData = JSON.parse(JSON.stringify(SITE_DATA));
     }
 
-    // Step 2: Check if the OLD localStorage has user-edited data
-    // If it does, prefer it — this recovers links that were saved before
-    // the new system was deployed
+    // 2. Check unified localStorage key first
     try {
-      const lsWork      = localStorage.getItem(OLD_WORK_KEY);
-      const lsMemories  = localStorage.getItem(OLD_MEMORIES_KEY);
-      const lsCreations = localStorage.getItem(OLD_CREATIONS_KEY);
-
-      const hasOldData = lsWork || lsMemories || lsCreations;
-
-      if (hasOldData) {
-        // Merge localStorage data — it takes priority over data.js defaults
-        if (lsWork)      siteData.work      = JSON.parse(lsWork);
-        if (lsMemories)  siteData.memories  = JSON.parse(lsMemories);
-        if (lsCreations) siteData.creations = JSON.parse(lsCreations);
-        migratedFromLocalStorage = true;
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          if (Array.isArray(parsed.work) && parsed.work.length) siteData.work = parsed.work;
+          if (Array.isArray(parsed.memories) && parsed.memories.length) siteData.memories = parsed.memories;
+          if (Array.isArray(parsed.creations) && parsed.creations.length) siteData.creations = parsed.creations;
+          return;
+        }
       }
     } catch (e) {
-      console.warn('Could not read old localStorage data:', e);
+      console.warn('Error reading STORAGE_KEY:', e);
+    }
+
+    // 3. Fallback to legacy keys if unified key not set
+    try {
+      const lsWork = localStorage.getItem(OLD_WORK_KEY);
+      if (lsWork) {
+        const parsedWork = JSON.parse(lsWork);
+        if (Array.isArray(parsedWork) && parsedWork.length) siteData.work = parsedWork;
+      }
+      const lsMemories = localStorage.getItem(OLD_MEMORIES_KEY);
+      if (lsMemories) {
+        const parsedMem = JSON.parse(lsMemories);
+        if (Array.isArray(parsedMem) && parsedMem.length) siteData.memories = parsedMem;
+      }
+      const lsCreations = localStorage.getItem(OLD_CREATIONS_KEY);
+      if (lsCreations) {
+        const parsedCre = JSON.parse(lsCreations);
+        if (Array.isArray(parsedCre) && parsedCre.length) siteData.creations = parsedCre;
+      }
+
+      // Check very old adminPosts key
+      const oldPosts = localStorage.getItem(OLD_POSTS_KEY);
+      if (oldPosts && (!siteData.work || !siteData.work.length)) {
+        const parsedPosts = JSON.parse(oldPosts);
+        if (Array.isArray(parsedPosts) && parsedPosts.length) {
+          siteData.work = parsedPosts.map(p => ({
+            id: p.id || ('w_' + Date.now()),
+            section: 'work',
+            title: p.title || '',
+            category: p.keywords || 'Video Work',
+            description: p.description || '',
+            embedUrl: p.embedUrl || '',
+            rawYtUrl: p.embedUrl || ''
+          }));
+        }
+      }
+
+      // Save merged data into the unified key
+      saveSiteDataLocally();
+    } catch (e) {
+      console.warn('Error recovering legacy data:', e);
+    }
+  }
+
+  function saveSiteDataLocally() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
+      // Also keep legacy keys in sync
+      localStorage.setItem(OLD_WORK_KEY, JSON.stringify(siteData.work || []));
+      localStorage.setItem(OLD_MEMORIES_KEY, JSON.stringify(siteData.memories || []));
+      localStorage.setItem(OLD_CREATIONS_KEY, JSON.stringify(siteData.creations || []));
+    } catch (e) {
+      console.error('Failed to save to localStorage:', e);
     }
   }
 
@@ -58,8 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const adminBarEmail      = document.getElementById('adminBarEmail');
   const adminBarLogoutBtn  = document.getElementById('adminBarLogoutBtn');
   const adminBarAddBtn     = document.getElementById('adminBarAddBtn');
+  const adminBarSyncBtn    = document.getElementById('adminBarSyncBtn');
   const activeAdminEmail   = document.getElementById('activeAdminEmail');
 
+  // Edit Modal
   const adminModal         = document.getElementById('adminModal');
   const closeAdminModal    = document.getElementById('closeAdminModal');
   const postEditorForm     = document.getElementById('postEditorForm');
@@ -69,51 +127,59 @@ document.addEventListener('DOMContentLoaded', () => {
   const creationsFieldsGroup=document.getElementById('creationsFieldsGroup');
   const adminPostsList     = document.getElementById('adminPostsList');
   const savePostBtn        = document.getElementById('savePostBtn');
+  const modalSaveFeedback  = document.getElementById('modalSaveFeedback');
 
+  // Sync Modal
+  const syncModal          = document.getElementById('syncModal');
+  const closeSyncModal     = document.getElementById('closeSyncModal');
+  const ghTokenInput       = document.getElementById('ghTokenInput');
+  const publishBtn         = document.getElementById('publishBtn');
+  const publishStatus      = document.getElementById('publishStatus');
+  const copyDataBtn        = document.getElementById('copyDataBtn');
+  const copyStatus         = document.getElementById('copyStatus');
+
+  // Grids
   const workGrid           = document.getElementById('workGrid');
   const memoriesGrid       = document.getElementById('memoriesGrid');
   const creationsGrid      = document.getElementById('creationsGrid');
   const inlineAddBtns      = document.querySelectorAll('.admin-inline-add-btn');
 
+  // Navigation
   const mobileToggle       = document.getElementById('mobileToggle');
   const navTabs            = document.getElementById('navTabs');
   const navLinks           = document.querySelectorAll('.nav-tabs .tab');
   const sections           = document.querySelectorAll('.content-section, .hero');
 
-  // GitHub token input (shown in modal footer)
-  const ghTokenInput       = document.getElementById('ghTokenInput');
-  const publishBtn         = document.getElementById('publishBtn');
-  const publishStatus      = document.getElementById('publishStatus');
-
   // ----------------------------------------------------------------
-  // Utility
+  // YouTube URL to Embed URL Converter
   // ----------------------------------------------------------------
   function toEmbedUrl(url) {
     if (!url) return '';
-    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11)
-      ? `https://www.youtube.com/embed/${match[2]}`
-      : url;
+    const cleanUrl = url.trim();
+    // Matches youtube.com/watch?v=..., youtu.be/..., shorts/..., live/..., embed/...
+    const match = cleanUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|live\/|(?:.*?[?&]v=)))([\w-]{11})/i);
+    if (match && match[1]) {
+      return `https://www.youtube.com/embed/${match[1]}`;
+    }
+    return cleanUrl;
   }
 
   // ----------------------------------------------------------------
-  // Session
+  // Session & Authentication
   // ----------------------------------------------------------------
   function isLoggedIn() {
     const s = sessionStorage.getItem(SESSION_KEY);
-    return s && ADMIN_EMAILS.includes(s);
+    return s && ADMIN_EMAILS.includes(s.toLowerCase());
   }
+
   function getSessionEmail() {
     return sessionStorage.getItem(SESSION_KEY) || '';
   }
+
   function getStoredToken() {
-    return sessionStorage.getItem('ts_gh_token') || '';
+    return localStorage.getItem('ts_gh_token') || sessionStorage.getItem('ts_gh_token') || '';
   }
 
-  // ----------------------------------------------------------------
-  // Boot
-  // ----------------------------------------------------------------
   function boot() {
     loadSiteData();
     if (isLoggedIn()) {
@@ -124,66 +190,45 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showGate() {
-    loginGate.style.display = 'flex';
-    adminPortal.classList.add('hidden');
+    if (loginGate) loginGate.style.display = 'flex';
+    if (adminPortal) adminPortal.classList.add('hidden');
   }
 
   function showPortal(email) {
-    loginGate.style.display = 'none';
-    adminPortal.classList.remove('hidden');
+    if (loginGate) loginGate.style.display = 'none';
+    if (adminPortal) adminPortal.classList.remove('hidden');
     if (adminBarEmail) adminBarEmail.textContent = email;
     if (activeAdminEmail) activeAdminEmail.textContent = email;
-    if (ghTokenInput && getStoredToken()) ghTokenInput.value = getStoredToken();
+    if (ghTokenInput) ghTokenInput.value = getStoredToken();
+
     renderAllSections();
     initNavigation();
-
-    // If we found old localStorage data, alert the admin to publish it now
-    if (migratedFromLocalStorage) {
-      // Open the editor modal straight to the publish panel
-      if (adminModal) adminModal.classList.add('active');
-      setPublishStatus(
-        '🔴 Your previously saved links have been recovered from this browser! ' +
-        'Click "Publish to All Devices" below to save them permanently to GitHub ' +
-        'so they appear on all devices (mobile, laptop, etc.).',
-        'warn'
-      );
-      // Scroll publish panel into view after a short delay
-      setTimeout(() => {
-        const panel = document.querySelector('.publish-panel');
-        if (panel) panel.scrollIntoView({ behavior: 'smooth' });
-      }, 400);
-    }
   }
 
-  // ----------------------------------------------------------------
-  // Login
-  // ----------------------------------------------------------------
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const email = loginEmailEl.value.trim().toLowerCase();
       if (ADMIN_EMAILS.includes(email)) {
         sessionStorage.setItem(SESSION_KEY, email);
-        loginMsg.textContent = '';
+        if (loginMsg) loginMsg.textContent = '';
         showPortal(email);
       } else {
-        loginMsg.textContent = 'Unauthorized email. Please use a registered admin account.';
+        if (loginMsg) loginMsg.textContent = 'Unauthorized email. Please use a registered admin account.';
       }
     });
   }
 
-  // ----------------------------------------------------------------
-  // Logout
-  // ----------------------------------------------------------------
   function handleLogout() {
     sessionStorage.removeItem(SESSION_KEY);
     showGate();
     if (adminModal) adminModal.classList.remove('active');
+    if (syncModal) syncModal.classList.remove('active');
   }
   if (adminBarLogoutBtn) adminBarLogoutBtn.addEventListener('click', handleLogout);
 
   // ----------------------------------------------------------------
-  // Navigation (same behaviour as main site)
+  // Navigation & Scroll Tracking
   // ----------------------------------------------------------------
   function initNavigation() {
     if (mobileToggle && navTabs) {
@@ -193,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.className = navTabs.classList.contains('open') ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
       });
     }
+
     navLinks.forEach(link => {
       link.addEventListener('click', () => {
         if (navTabs && navTabs.classList.contains('open')) {
@@ -201,6 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     });
+
     window.addEventListener('scroll', () => {
       let cur = '';
       const sp = window.scrollY + 200;
@@ -214,112 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ----------------------------------------------------------------
-  // GitHub API — push updated data.js to repo
-  // ----------------------------------------------------------------
-  async function pushDataToGitHub(token) {
-    const dataJsContent = buildDataJs();
-    const encoded = btoa(unescape(encodeURIComponent(dataJsContent)));
-
-    setPublishStatus('⏳ Connecting to GitHub…', 'info');
-
-    // Step 1: Get current file SHA (needed for update)
-    const getUrl = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}`;
-    let sha = '';
-    try {
-      const getRes = await fetch(getUrl, {
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-      if (getRes.ok) {
-        const getData = await getRes.json();
-        sha = getData.sha;
-      } else if (getRes.status === 401) {
-        setPublishStatus('❌ Invalid GitHub token. Please check and try again.', 'error');
-        return false;
-      }
-    } catch (err) {
-      setPublishStatus('❌ Network error. Check your connection.', 'error');
-      return false;
-    }
-
-    // Step 2: PUT updated content
-    setPublishStatus('⏳ Publishing changes…', 'info');
-    const putUrl = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE_PATH}`;
-    const body = {
-      message: `content: update site data via admin portal`,
-      content: encoded,
-      branch: GH_BRANCH,
-      ...(sha ? { sha } : {})
-    };
-
-    try {
-      const putRes = await fetch(putUrl, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (putRes.ok) {
-        setPublishStatus('✅ Published! All devices will show the update in ~1 minute.', 'success');
-        // Save token for this session
-        sessionStorage.setItem('ts_gh_token', token);
-        // Clear old localStorage now that data is safely in GitHub
-        localStorage.removeItem(OLD_WORK_KEY);
-        localStorage.removeItem(OLD_MEMORIES_KEY);
-        localStorage.removeItem(OLD_CREATIONS_KEY);
-        migratedFromLocalStorage = false;
-        return true;
-      } else {
-        const err = await putRes.json();
-        setPublishStatus(`❌ GitHub error: ${err.message}`, 'error');
-        return false;
-      }
-    } catch (err) {
-      setPublishStatus('❌ Network error during publish.', 'error');
-      return false;
-    }
-  }
-
-  function buildDataJs() {
-    const escape = (s) => String(s).replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-    return `// assets/js/data.js
-// Central content store — edit via Admin Portal at /admin
-// Changes here are reflected on ALL devices immediately after GitHub Pages rebuilds (~1 min)
-
-const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
-`;
-  }
-
-  function setPublishStatus(msg, type) {
-    if (!publishStatus) return;
-    publishStatus.textContent = msg;
-    publishStatus.className = 'publish-status publish-' + type;
-  }
-
-  // Publish button handler
-  if (publishBtn) {
-    publishBtn.addEventListener('click', async () => {
-      const token = ghTokenInput ? ghTokenInput.value.trim() : '';
-      if (!token) {
-        setPublishStatus('⚠️ Please enter your GitHub Personal Access Token first.', 'warn');
-        return;
-      }
-      publishBtn.disabled = true;
-      publishBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Publishing…';
-      await pushDataToGitHub(token);
-      publishBtn.disabled = false;
-      publishBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Publish to All Devices';
-    });
-  }
-
-  // ----------------------------------------------------------------
-  // Admin Modal Controls
+  // Modal Handling
   // ----------------------------------------------------------------
   if (adminBarAddBtn) adminBarAddBtn.addEventListener('click', () => openAdminModal('work'));
   if (closeAdminModal) closeAdminModal.addEventListener('click', () => adminModal.classList.remove('active'));
@@ -328,17 +270,39 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
       if (e.target === adminModal) adminModal.classList.remove('active');
     });
   }
+
+  // Sync Modal Triggers
+  if (adminBarSyncBtn) adminBarSyncBtn.addEventListener('click', openSyncModal);
+  if (closeSyncModal) closeSyncModal.addEventListener('click', () => syncModal.classList.remove('active'));
+  if (syncModal) {
+    syncModal.addEventListener('click', (e) => {
+      if (e.target === syncModal) syncModal.classList.remove('active');
+    });
+  }
+
+  function openSyncModal() {
+    if (!syncModal) return;
+    syncModal.classList.add('active');
+    if (ghTokenInput && !ghTokenInput.value) {
+      ghTokenInput.value = getStoredToken();
+    }
+  }
+
   inlineAddBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       openAdminModal(e.currentTarget.getAttribute('data-section'));
     });
   });
+
   if (targetSection) {
     targetSection.addEventListener('change', (e) => switchSectionFields(e.target.value));
   }
 
   function openAdminModal(preselectSection = 'work', editItemId = null) {
+    if (!adminModal) return;
     adminModal.classList.add('active');
+    if (modalSaveFeedback) modalSaveFeedback.textContent = '';
+
     if (targetSection) {
       targetSection.value = preselectSection;
       switchSectionFields(preselectSection);
@@ -352,41 +316,43 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
   }
 
   function switchSectionFields(sec) {
-    workFieldsGroup.classList.add('hidden');
-    memoriesFieldsGroup.classList.add('hidden');
-    creationsFieldsGroup.classList.add('hidden');
-    if (sec === 'work') workFieldsGroup.classList.remove('hidden');
-    else if (sec === 'memories') memoriesFieldsGroup.classList.remove('hidden');
-    else if (sec === 'creations') creationsFieldsGroup.classList.remove('hidden');
+    if (workFieldsGroup) workFieldsGroup.classList.add('hidden');
+    if (memoriesFieldsGroup) memoriesFieldsGroup.classList.add('hidden');
+    if (creationsFieldsGroup) creationsFieldsGroup.classList.add('hidden');
+
+    if (sec === 'work' && workFieldsGroup) workFieldsGroup.classList.remove('hidden');
+    else if (sec === 'memories' && memoriesFieldsGroup) memoriesFieldsGroup.classList.remove('hidden');
+    else if (sec === 'creations' && creationsFieldsGroup) creationsFieldsGroup.classList.remove('hidden');
   }
 
   function resetForm() {
-    postEditorForm.reset();
-    document.getElementById('postId').value = '';
+    if (postEditorForm) postEditorForm.reset();
+    const idEl = document.getElementById('postId');
+    if (idEl) idEl.value = '';
     if (savePostBtn) savePostBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Save Item';
   }
 
   // ----------------------------------------------------------------
-  // Save / Edit / Delete  (updates in-memory siteData — publish to sync)
+  // Form Save / Edit / Delete (Always persists to localStorage)
   // ----------------------------------------------------------------
   if (postEditorForm) {
     postEditorForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const id  = document.getElementById('postId').value;
-      const sec = targetSection.value;
+      const id          = document.getElementById('postId').value;
+      const sec         = targetSection.value;
       const title       = document.getElementById('postTitle').value.trim();
       const description = document.getElementById('postDescription').value.trim();
 
       if (sec === 'work') {
         const category = document.getElementById('workCategory').value.trim() || 'Video Reel';
-        const rawYtUrl  = document.getElementById('workYtUrl').value.trim();
-        const embedUrl  = toEmbedUrl(rawYtUrl);
-        const item      = { id: id || ('work_' + Date.now()), section: 'work', title, category, description, embedUrl, rawYtUrl };
+        const rawYtUrl = document.getElementById('workYtUrl').value.trim();
+        const embedUrl = toEmbedUrl(rawYtUrl);
+        const item     = { id: id || ('work_' + Date.now()), section: 'work', title, category, description, embedUrl, rawYtUrl };
         upsert('work', item, id);
 
       } else if (sec === 'memories') {
-        const tag         = document.getElementById('memoryTag').value.trim() || 'Moment';
-        const rawMediaUrl = document.getElementById('memoryMediaUrl').value.trim() || '../assets/images/hero_banner.png';
+        const tag         = document.getElementById('memoryTag').value.trim() || 'Memory';
+        const rawMediaUrl = document.getElementById('memoryMediaUrl').value.trim() || 'assets/images/hero_banner.png';
         const isVideo     = rawMediaUrl.includes('youtube.com') || rawMediaUrl.includes('youtu.be');
         const mediaUrl    = isVideo ? toEmbedUrl(rawMediaUrl) : rawMediaUrl;
         const item        = { id: id || ('mem_' + Date.now()), section: 'memories', title, tag, description, mediaUrl, isVideo };
@@ -400,39 +366,57 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
         upsert('creations', item, id);
       }
 
+      // CRITICAL: Save to localStorage immediately so data is NEVER lost
+      saveSiteDataLocally();
+
       resetForm();
       renderAllSections();
       renderAdminPostsList();
-      // Prompt admin to publish
-      setPublishStatus('⚠️ Changes saved locally. Click "Publish to All Devices" to push to GitHub.', 'warn');
+
+      // Show save confirmation
+      if (modalSaveFeedback) {
+        modalSaveFeedback.textContent = '✅ Saved! Visible now on this device. Click "Sync to Mobile" on top bar to publish to mobile.';
+        modalSaveFeedback.className = 'publish-status publish-success';
+        setTimeout(() => {
+          if (modalSaveFeedback) modalSaveFeedback.textContent = '';
+        }, 5000);
+      }
     });
   }
 
   function upsert(sec, newItem, existingId) {
+    if (!siteData[sec]) siteData[sec] = [];
     if (existingId) {
       const idx = siteData[sec].findIndex(i => i.id === existingId);
-      if (idx !== -1) siteData[sec][idx] = newItem;
-      else siteData[sec].unshift(newItem);
+      if (idx !== -1) {
+        siteData[sec][idx] = newItem;
+      } else {
+        siteData[sec].unshift(newItem);
+      }
     } else {
       siteData[sec].unshift(newItem);
     }
   }
 
   function deleteItem(sec, id) {
-    if (!confirm('Delete this item permanently?')) return;
-    siteData[sec] = siteData[sec].filter(i => i.id !== id);
+    if (!confirm('Are you sure you want to delete this item?')) return;
+    if (siteData[sec]) {
+      siteData[sec] = siteData[sec].filter(i => i.id !== id);
+    }
+    saveSiteDataLocally();
     renderAllSections();
     renderAdminPostsList();
-    setPublishStatus('⚠️ Item deleted locally. Click "Publish to All Devices" to push to GitHub.', 'warn');
   }
 
   function populateEditForm(sec, id) {
     const item = siteData[sec] && siteData[sec].find(i => i.id === id);
     if (!item) return;
+
     document.getElementById('postId').value          = item.id;
     document.getElementById('postTitle').value       = item.title || '';
     document.getElementById('postDescription').value = item.description || '';
     if (savePostBtn) savePostBtn.innerHTML = '<i class="fa-solid fa-check"></i> Update Item';
+
     if (sec === 'work') {
       document.getElementById('workCategory').value = item.category || '';
       document.getElementById('workYtUrl').value    = item.rawYtUrl || item.embedUrl || '';
@@ -447,7 +431,7 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
   }
 
   // ----------------------------------------------------------------
-  // Render Admin Posts List (inside modal)
+  // Render Admin Managed Posts List
   // ----------------------------------------------------------------
   function renderAdminPostsList() {
     if (!adminPostsList) return;
@@ -461,6 +445,7 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
       adminPostsList.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">No items yet.</p>';
       return;
     }
+
     allItems.forEach(item => {
       const div = document.createElement('div');
       div.className = 'admin-post-item';
@@ -470,11 +455,12 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
           <strong style="margin-left:0.3rem;">${item.title}</strong>
         </div>
         <div class="post-action-btns">
-          <button class="btn btn-small btn-secondary edit-item-btn" data-sec="${item.section}" data-id="${item.id}"><i class="fa-solid fa-pen"></i></button>
-          <button class="btn btn-small btn-secondary delete-item-btn" data-sec="${item.section}" data-id="${item.id}" style="color:#ff6b6b;"><i class="fa-solid fa-trash"></i></button>
+          <button class="btn btn-small btn-secondary edit-item-btn" data-sec="${item.section}" data-id="${item.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn btn-small btn-secondary delete-item-btn" data-sec="${item.section}" data-id="${item.id}" style="color:#ff6b6b;" title="Delete"><i class="fa-solid fa-trash"></i></button>
         </div>`;
       adminPostsList.appendChild(div);
     });
+
     adminPostsList.querySelectorAll('.edit-item-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const sec = e.currentTarget.dataset.sec;
@@ -484,6 +470,7 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
         populateEditForm(sec, id);
       });
     });
+
     adminPostsList.querySelectorAll('.delete-item-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         deleteItem(e.currentTarget.dataset.sec, e.currentTarget.dataset.id);
@@ -492,7 +479,7 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
   }
 
   // ----------------------------------------------------------------
-  // Render all sections with admin edit overlays
+  // Section Renderers (Live Preview with Edit Overlays)
   // ----------------------------------------------------------------
   function renderAllSections() {
     renderWorkSection();
@@ -507,9 +494,18 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
     (siteData.work || []).forEach(item => {
       const card = document.createElement('div');
       card.className = 'work-card glass-card';
+
       const videoHtml = item.embedUrl
-        ? `<div class="video-container"><iframe src="${item.embedUrl}" title="${item.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
-        : `<div class="video-placeholder"><i class="fa-brands fa-youtube"></i><span>Video coming soon</span></div>`;
+        ? `<div class="video-container">
+             <iframe src="${item.embedUrl}" title="${item.title}" frameborder="0"
+               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+               allowfullscreen></iframe>
+           </div>`
+        : `<div class="video-placeholder">
+             <i class="fa-brands fa-youtube"></i>
+             <span>Video coming soon</span>
+           </div>`;
+
       card.innerHTML = `
         <div class="card-admin-toolbar">
           <button class="card-admin-btn edit-btn" data-sec="work" data-id="${item.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
@@ -532,15 +528,25 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
       const card = document.createElement('div');
       card.className = 'memory-card glass-card';
       const mediaContent = item.isVideo && item.mediaUrl
-        ? `<div class="video-container"><iframe src="${item.mediaUrl}" title="${item.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`
-        : `<div class="memory-image" style="background-image:url('${item.mediaUrl || '../assets/images/hero_banner.png'}');"><div class="memory-tag"><i class="fa-solid fa-star"></i> ${item.tag || 'Memory'}</div></div>`;
+        ? `<div class="video-container">
+             <iframe src="${item.mediaUrl}" title="${item.title}" frameborder="0"
+               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+               allowfullscreen></iframe>
+           </div>`
+        : `<div class="memory-image" style="background-image:url('${item.mediaUrl || '../assets/images/hero_banner.png'}');">
+             <div class="memory-tag"><i class="fa-solid fa-star"></i> ${item.tag || 'Memory'}</div>
+           </div>`;
+
       card.innerHTML = `
         <div class="card-admin-toolbar">
           <button class="card-admin-btn edit-btn" data-sec="memories" data-id="${item.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
           <button class="card-admin-btn delete-btn" data-sec="memories" data-id="${item.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
         </div>
         ${mediaContent}
-        <div class="card-body"><h3>${item.title}</h3><p>${item.description}</p></div>`;
+        <div class="card-body">
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+        </div>`;
       memoriesGrid.appendChild(card);
     });
   }
@@ -552,9 +558,10 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
       const card = document.createElement('div');
       card.className = 'creation-card glass-card';
       let iconClass = 'fa-brands fa-youtube icon-youtube', btnIcon = 'fa-brands fa-youtube', btnLabel = 'Visit Channel';
-      if (item.iconStyle === 'food')  { iconClass = 'fa-solid fa-bowl-food icon-food'; }
-      if (item.iconStyle === 'blog')  { iconClass = 'fa-solid fa-blog icon-blog'; btnIcon = 'fa-solid fa-arrow-up-right-from-square'; btnLabel = 'Read Blog'; }
-      if (item.iconStyle === 'web')   { iconClass = 'fa-solid fa-globe icon-web'; btnIcon = 'fa-solid fa-globe'; btnLabel = 'Open Webpage'; }
+      if (item.iconStyle === 'food') { iconClass = 'fa-solid fa-bowl-food icon-food'; }
+      if (item.iconStyle === 'blog') { iconClass = 'fa-solid fa-blog icon-blog'; btnIcon = 'fa-solid fa-arrow-up-right-from-square'; btnLabel = 'Read Blog'; }
+      if (item.iconStyle === 'web')  { iconClass = 'fa-solid fa-globe icon-web'; btnIcon = 'fa-solid fa-globe'; btnLabel = 'Open Webpage'; }
+
       card.innerHTML = `
         <div class="card-admin-toolbar">
           <button class="card-admin-btn edit-btn" data-sec="creations" data-id="${item.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
@@ -584,6 +591,143 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
         deleteItem(e.currentTarget.dataset.sec, e.currentTarget.dataset.id);
       });
     });
+  }
+
+  // ----------------------------------------------------------------
+  // GitHub API Sync & Code Export
+  // ----------------------------------------------------------------
+  function buildDataJs() {
+    return `// assets/js/data.js
+// Central content store — edit via Admin Portal at /admin
+// Changes here are reflected on ALL devices immediately after GitHub Pages rebuilds (~1 min)
+
+const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
+`;
+  }
+
+  function setPublishStatus(msg, type) {
+    if (!publishStatus) return;
+    publishStatus.textContent = msg;
+    publishStatus.className = 'publish-status publish-' + type;
+  }
+
+  // Publish button handler
+  if (publishBtn) {
+    publishBtn.addEventListener('click', async () => {
+      const token = ghTokenInput ? ghTokenInput.value.trim() : '';
+      if (!token) {
+        setPublishStatus('⚠️ Please enter your GitHub Personal Access Token.', 'warn');
+        return;
+      }
+      publishBtn.disabled = true;
+      publishBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing to GitHub…';
+      await pushDataToGitHub(token);
+      publishBtn.disabled = false;
+      publishBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Sync to GitHub &amp; Mobile Now';
+    });
+  }
+
+  async function pushDataToGitHub(token) {
+    const dataJsContent = buildDataJs();
+    const encoded = btoa(unescape(encodeURIComponent(dataJsContent)));
+
+    setPublishStatus('⏳ Connecting to GitHub repository…', 'info');
+
+    // Step 1: Get current file SHA
+    const getUrl = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}`;
+    let sha = '';
+    try {
+      const getRes = await fetch(getUrl, {
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
+      });
+      if (getRes.ok) {
+        const getData = await getRes.json();
+        sha = getData.sha;
+      } else if (getRes.status === 401) {
+        setPublishStatus('❌ Invalid GitHub token. Please verify your token and try again.', 'error');
+        return false;
+      }
+    } catch (err) {
+      setPublishStatus('❌ Network error. Please check your internet connection.', 'error');
+      return false;
+    }
+
+    // Step 2: Push updated data.js to repo
+    setPublishStatus('⏳ Publishing content to GitHub…', 'info');
+    const putUrl = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE_PATH}`;
+    const body = {
+      message: `content: sync site data via admin portal`,
+      content: encoded,
+      branch: GH_BRANCH,
+      ...(sha ? { sha } : {})
+    };
+
+    try {
+      const putRes = await fetch(putUrl, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${token}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (putRes.ok) {
+        setPublishStatus('✅ Published! Mobile phones and all visitors will see the update in ~1 minute.', 'success');
+        // Save token permanently in localStorage so admin never has to re-type it
+        localStorage.setItem('ts_gh_token', token);
+        return true;
+      } else {
+        const err = await putRes.json();
+        setPublishStatus(`❌ GitHub error: ${err.message || 'Failed to update'}`, 'error');
+        return false;
+      }
+    } catch (err) {
+      setPublishStatus('❌ Network error during publish.', 'error');
+      return false;
+    }
+  }
+
+  // Copy Data Button (Option 2)
+  if (copyDataBtn) {
+    copyDataBtn.addEventListener('click', () => {
+      const dataCode = buildDataJs();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(dataCode).then(() => {
+          if (copyStatus) {
+            copyStatus.style.display = 'block';
+            copyStatus.textContent = '✅ Copied to clipboard! You can paste this in the chat or in GitHub.';
+            setTimeout(() => { copyStatus.style.display = 'none'; }, 5000);
+          }
+        }).catch(() => fallbackCopy(dataCode));
+      } else {
+        fallbackCopy(dataCode);
+      }
+    });
+  }
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      if (copyStatus) {
+        copyStatus.style.display = 'block';
+        copyStatus.textContent = '✅ Copied to clipboard!';
+        setTimeout(() => { copyStatus.style.display = 'none'; }, 5000);
+      }
+    } catch (e) {
+      alert('Could not copy automatically. Please open browser console to copy.');
+    }
+    document.body.removeChild(ta);
   }
 
   // Boot

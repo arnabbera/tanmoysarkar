@@ -1,5 +1,5 @@
 // assets/js/main.js - Portfolio Navigation & Dynamic Section Renderer (Public View)
-// Content is loaded from assets/js/data.js (SITE_DATA) — same on ALL devices
+// Loads content from localStorage if available locally, falling back to SITE_DATA (data.js)
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -55,25 +55,65 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =========================================================
-     2. Render Sections from SITE_DATA (data.js)
-        SITE_DATA is the single source of truth — same on all devices
+     2. Content Data Resolution (Local Storage -> SITE_DATA fallback)
      ========================================================= */
-  function renderAllSections() {
-    renderWorkSection();
-    renderMemoriesSection();
-    renderCreationsSection();
+  function getEffectiveSiteData() {
+    let base = (typeof SITE_DATA !== 'undefined') ? JSON.parse(JSON.stringify(SITE_DATA)) : { work: [], memories: [], creations: [] };
+
+    try {
+      // Check unified key
+      const stored = localStorage.getItem('ts_site_data');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          if (Array.isArray(parsed.work) && parsed.work.length) base.work = parsed.work;
+          if (Array.isArray(parsed.memories) && parsed.memories.length) base.memories = parsed.memories;
+          if (Array.isArray(parsed.creations) && parsed.creations.length) base.creations = parsed.creations;
+          return base;
+        }
+      }
+
+      // Check legacy keys
+      const lsWork = localStorage.getItem('ts_work_items_v2');
+      if (lsWork) {
+        const pWork = JSON.parse(lsWork);
+        if (Array.isArray(pWork) && pWork.length) base.work = pWork;
+      }
+      const lsMem = localStorage.getItem('ts_memories_items_v2');
+      if (lsMem) {
+        const pMem = JSON.parse(lsMem);
+        if (Array.isArray(pMem) && pMem.length) base.memories = pMem;
+      }
+      const lsCre = localStorage.getItem('ts_creations_items_v2');
+      if (lsCre) {
+        const pCre = JSON.parse(lsCre);
+        if (Array.isArray(pCre) && pCre.length) base.creations = pCre;
+      }
+    } catch (e) {
+      console.warn('Error reading local content cache:', e);
+    }
+
+    return base;
   }
 
-  function renderWorkSection() {
+  /* =========================================================
+     3. Render Sections
+     ========================================================= */
+  function renderAllSections() {
+    const data = getEffectiveSiteData();
+    renderWorkSection(data.work || []);
+    renderMemoriesSection(data.memories || []);
+    renderCreationsSection(data.creations || []);
+  }
+
+  function renderWorkSection(items) {
     if (!workGrid) return;
-    const items = (typeof SITE_DATA !== 'undefined') ? SITE_DATA.work : [];
     workGrid.innerHTML = '';
 
     items.forEach(item => {
       const card = document.createElement('div');
       card.className = 'work-card glass-card';
 
-      // Only render video iframe if there's a valid embed URL
       const videoHtml = item.embedUrl
         ? `<div class="video-container">
              <iframe src="${item.embedUrl}" title="${item.title}" frameborder="0"
@@ -97,9 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function renderMemoriesSection() {
+  function renderMemoriesSection(items) {
     if (!memoriesGrid) return;
-    const items = (typeof SITE_DATA !== 'undefined') ? SITE_DATA.memories : [];
     memoriesGrid.innerHTML = '';
 
     items.forEach(item => {
@@ -134,9 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function renderCreationsSection() {
+  function renderCreationsSection(items) {
     if (!creationsGrid) return;
-    const items = (typeof SITE_DATA !== 'undefined') ? SITE_DATA.creations : [];
     creationsGrid.innerHTML = '';
 
     items.forEach(item => {
