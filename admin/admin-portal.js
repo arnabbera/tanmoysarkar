@@ -611,103 +611,31 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
     publishStatus.className = 'publish-status publish-' + type;
   }
 
-  // Publish button handler
-  if (publishBtn) {
-    publishBtn.addEventListener('click', async () => {
-      const token = ghTokenInput ? ghTokenInput.value.trim() : '';
-      if (!token) {
-        setPublishStatus('⚠️ Please enter your GitHub Personal Access Token.', 'warn');
-        return;
-      }
-      publishBtn.disabled = true;
-      publishBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing to GitHub…';
-      await pushDataToGitHub(token);
-      publishBtn.disabled = false;
-      publishBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Sync to GitHub &amp; Mobile Now';
-    });
-  }
+  // ----------------------------------------------------------------
+  // Zero-Token Content Export (Copy to Clipboard & Download data.js)
+  // ----------------------------------------------------------------
+  const downloadDataBtn = document.getElementById('downloadDataBtn');
 
-  async function pushDataToGitHub(token) {
-    const dataJsContent = buildDataJs();
-    const encoded = btoa(unescape(encodeURIComponent(dataJsContent)));
-
-    setPublishStatus('⏳ Connecting to GitHub repository…', 'info');
-
-    // Step 1: Get current file SHA
-    const getUrl = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE_PATH}?ref=${GH_BRANCH}`;
-    let sha = '';
-    try {
-      const getRes = await fetch(getUrl, {
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-      if (getRes.ok) {
-        const getData = await getRes.json();
-        sha = getData.sha;
-      } else if (getRes.status === 401) {
-        setPublishStatus('❌ Invalid GitHub token. Please verify your token and try again.', 'error');
-        return false;
-      }
-    } catch (err) {
-      setPublishStatus('❌ Network error. Please check your internet connection.', 'error');
-      return false;
-    }
-
-    // Step 2: Push updated data.js to repo
-    setPublishStatus('⏳ Publishing content to GitHub…', 'info');
-    const putUrl = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE_PATH}`;
-    const body = {
-      message: `content: sync site data via admin portal`,
-      content: encoded,
-      branch: GH_BRANCH,
-      ...(sha ? { sha } : {})
-    };
-
-    try {
-      const putRes = await fetch(putUrl, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${token}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (putRes.ok) {
-        setPublishStatus('✅ Published! Mobile phones and all visitors will see the update in ~1 minute.', 'success');
-        // Save token permanently in localStorage so admin never has to re-type it
-        localStorage.setItem('ts_gh_token', token);
-        return true;
-      } else {
-        const err = await putRes.json();
-        setPublishStatus(`❌ GitHub error: ${err.message || 'Failed to update'}`, 'error');
-        return false;
-      }
-    } catch (err) {
-      setPublishStatus('❌ Network error during publish.', 'error');
-      return false;
-    }
-  }
-
-  // Copy Data Button (Option 2)
+  // 1. Copy Data to Clipboard
   if (copyDataBtn) {
     copyDataBtn.addEventListener('click', () => {
       const dataCode = buildDataJs();
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(dataCode).then(() => {
-          if (copyStatus) {
-            copyStatus.style.display = 'block';
-            copyStatus.textContent = '✅ Copied to clipboard! You can paste this in the chat or in GitHub.';
-            setTimeout(() => { copyStatus.style.display = 'none'; }, 5000);
-          }
+          showCopySuccess();
         }).catch(() => fallbackCopy(dataCode));
       } else {
         fallbackCopy(dataCode);
       }
     });
+  }
+
+  function showCopySuccess() {
+    if (copyStatus) {
+      copyStatus.style.display = 'block';
+      copyStatus.textContent = '✅ Copied to clipboard! Just paste it in the chat with your assistant to publish!';
+      setTimeout(() => { if (copyStatus) copyStatus.style.display = 'none'; }, 6000);
+    }
   }
 
   function fallbackCopy(text) {
@@ -719,15 +647,27 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
     ta.select();
     try {
       document.execCommand('copy');
-      if (copyStatus) {
-        copyStatus.style.display = 'block';
-        copyStatus.textContent = '✅ Copied to clipboard!';
-        setTimeout(() => { copyStatus.style.display = 'none'; }, 5000);
-      }
+      showCopySuccess();
     } catch (e) {
-      alert('Could not copy automatically. Please open browser console to copy.');
+      alert('Could not copy automatically. Please open browser console.');
     }
     document.body.removeChild(ta);
+  }
+
+  // 2. Download data.js directly
+  if (downloadDataBtn) {
+    downloadDataBtn.addEventListener('click', () => {
+      const dataCode = buildDataJs();
+      const blob = new Blob([dataCode], { type: 'application/javascript;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'data.js';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
   }
 
   // Boot
