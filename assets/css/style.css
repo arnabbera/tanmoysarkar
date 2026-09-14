@@ -735,35 +735,6 @@ body.admin-mode .hero {
   color: var(--cyan-accent);
 }
 
-/* WhatsApp CTA Button */
-.whatsapp-cta-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-  color: #ffffff !important;
-  font-size: 1.05rem;
-  font-weight: 700;
-  padding: 0.95rem 1.8rem;
-  border-radius: 50px;
-  text-decoration: none !important;
-  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  margin: 1.2rem 0 1.8rem;
-  width: 100%;
-}
-
-.whatsapp-cta-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
-  background: linear-gradient(135deg, #2cf476 0%, #17a999 100%);
-}
-
-.whatsapp-cta-btn i {
-  font-size: 1.5rem;
-}
-
 /* Floating WhatsApp Quick Action Button */
 .floating-whatsapp {
   position: fixed;
