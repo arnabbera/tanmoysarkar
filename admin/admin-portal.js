@@ -39,9 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && typeof parsed === 'object') {
-          if (Array.isArray(parsed.work) && parsed.work.length) siteData.work = parsed.work;
-          if (Array.isArray(parsed.memories) && parsed.memories.length) siteData.memories = parsed.memories;
-          if (Array.isArray(parsed.creations) && parsed.creations.length) siteData.creations = parsed.creations;
+          if (Array.isArray(parsed.work)) siteData.work = parsed.work;
+          if (Array.isArray(parsed.memories)) siteData.memories = parsed.memories;
+          if (Array.isArray(parsed.creations)) siteData.creations = parsed.creations;
           return;
         }
       }
@@ -177,7 +177,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getStoredToken() {
-    return localStorage.getItem('ts_gh_token') || sessionStorage.getItem('ts_gh_token') || '';
+    // Keep the GitHub token only for this browser tab. Never persist it in localStorage.
+    return sessionStorage.getItem('ts_gh_token') || '';
   }
 
   function boot() {
@@ -373,9 +374,14 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAllSections();
       renderAdminPostsList();
 
+      // Publish automatically after the token has been supplied once in this tab.
+      if (getStoredToken()) publishSiteData(true);
+
       // Show save confirmation
       if (modalSaveFeedback) {
-        modalSaveFeedback.textContent = '✅ Saved! Visible now on this device. Click "Sync to Mobile" on top bar to publish to mobile.';
+        modalSaveFeedback.textContent = getStoredToken()
+          ? '✅ Saved locally. Publishing to GitHub now…'
+          : '✅ Saved on this device. Click "Sync to Mobile" to publish it everywhere.';
         modalSaveFeedback.className = 'publish-status publish-success';
         setTimeout(() => {
           if (modalSaveFeedback) modalSaveFeedback.textContent = '';
@@ -406,6 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
     saveSiteDataLocally();
     renderAllSections();
     renderAdminPostsList();
+    if (getStoredToken()) publishSiteData(true);
   }
 
   function populateEditForm(sec, id) {
@@ -611,8 +618,101 @@ const SITE_DATA = ${JSON.stringify(siteData, null, 2)};
     publishStatus.className = 'publish-status publish-' + type;
   }
 
+  let publishInFlight = false;
+  let publishQueued = false;
+
+  function encodeBase64Utf8(value) {
+    const bytes = new TextEncoder().encode(value);
+    let binary = '';
+    bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+    return btoa(binary);
+  }
+
+  async function publishSiteData(isAutomatic = false) {
+    const token = (ghTokenInput && ghTokenInput.value.trim()) || getStoredToken();
+    if (!token) {
+      setPublishStatus('Enter a GitHub fine-grained token with Contents read/write access.', 'error');
+      if (ghTokenInput) ghTokenInput.focus();
+      return;
+    }
+
+    // The token remains only in this tab and disappears when the tab is closed.
+    sessionStorage.setItem('ts_gh_token', token);
+
+    if (publishInFlight) {
+      publishQueued = true;
+      return;
+    }
+
+    publishInFlight = true;
+    if (publishBtn) publishBtn.disabled = true;
+    setPublishStatus(isAutomatic ? 'Saving latest change to GitHub…' : 'Publishing to GitHub…', 'pending');
+
+    try {
+      const apiUrl = `https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE_PATH}`;
+      const headers = {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28'
+      };
+
+      const currentResponse = await fetch(`${apiUrl}?ref=${encodeURIComponent(GH_BRANCH)}&t=${Date.now()}`, {
+        method: 'GET',
+        headers,
+        cache: 'no-store'
+      });
+      if (!currentResponse.ok) {
+        throw new Error(currentResponse.status === 401 || currentResponse.status === 403
+          ? 'GitHub rejected the token. Check repository access and Contents read/write permission.'
+          : `Could not read the current GitHub file (HTTP ${currentResponse.status}).`);
+      }
+
+      const currentFile = await currentResponse.json();
+      const updateResponse = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: 'content: publish admin updates',
+          content: encodeBase64Utf8(buildDataJs()),
+          sha: currentFile.sha,
+          branch: GH_BRANCH
+        })
+      });
+
+      if (!updateResponse.ok) {
+        const errorBody = await updateResponse.json().catch(() => ({}));
+        throw new Error(errorBody.message || `GitHub update failed (HTTP ${updateResponse.status}).`);
+      }
+
+      // The GitHub copy is now authoritative. Remove stale browser caches so
+      // deleted items cannot reappear after a later visit.
+      [STORAGE_KEY, OLD_WORK_KEY, OLD_MEMORIES_KEY, OLD_CREATIONS_KEY, OLD_POSTS_KEY]
+        .forEach(key => localStorage.removeItem(key));
+
+      setPublishStatus('✅ Published to GitHub. Mobile and other devices will update after GitHub Pages deploys.', 'success');
+      if (modalSaveFeedback) {
+        modalSaveFeedback.textContent = '✅ Published successfully. The live site is updating.';
+        modalSaveFeedback.className = 'publish-status publish-success';
+      }
+    } catch (error) {
+      console.error('GitHub publish failed:', error);
+      setPublishStatus(`❌ ${error.message}`, 'error');
+    } finally {
+      publishInFlight = false;
+      if (publishBtn) publishBtn.disabled = false;
+      if (publishQueued) {
+        publishQueued = false;
+        publishSiteData(true);
+      }
+    }
+  }
+
+  if (publishBtn) {
+    publishBtn.addEventListener('click', () => publishSiteData(false));
+  }
+
   // ----------------------------------------------------------------
-  // Zero-Token Content Export (Copy to Clipboard & Download data.js)
+  // Manual backup export (Copy to Clipboard & Download data.js)
   // ----------------------------------------------------------------
   const downloadDataBtn = document.getElementById('downloadDataBtn');
 
