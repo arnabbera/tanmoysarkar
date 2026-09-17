@@ -55,45 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* =========================================================
-     2. Content Data Resolution (Local Storage -> SITE_DATA fallback)
+     2. Content Data Resolution
+     The public site always uses the repository-backed data.js file.
+     Browser-local admin drafts must never override published content.
      ========================================================= */
   function getEffectiveSiteData() {
-    let base = (typeof SITE_DATA !== 'undefined') ? JSON.parse(JSON.stringify(SITE_DATA)) : { work: [], memories: [], creations: [] };
-
-    try {
-      // Check unified key
-      const stored = localStorage.getItem('ts_site_data');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed && typeof parsed === 'object') {
-          if (Array.isArray(parsed.work) && parsed.work.length) base.work = parsed.work;
-          if (Array.isArray(parsed.memories) && parsed.memories.length) base.memories = parsed.memories;
-          if (Array.isArray(parsed.creations) && parsed.creations.length) base.creations = parsed.creations;
-          return base;
-        }
-      }
-
-      // Check legacy keys
-      const lsWork = localStorage.getItem('ts_work_items_v2');
-      if (lsWork) {
-        const pWork = JSON.parse(lsWork);
-        if (Array.isArray(pWork) && pWork.length) base.work = pWork;
-      }
-      const lsMem = localStorage.getItem('ts_memories_items_v2');
-      if (lsMem) {
-        const pMem = JSON.parse(lsMem);
-        if (Array.isArray(pMem) && pMem.length) base.memories = pMem;
-      }
-      const lsCre = localStorage.getItem('ts_creations_items_v2');
-      if (lsCre) {
-        const pCre = JSON.parse(lsCre);
-        if (Array.isArray(pCre) && pCre.length) base.creations = pCre;
-      }
-    } catch (e) {
-      console.warn('Error reading local content cache:', e);
-    }
-
-    return base;
+    return (typeof SITE_DATA !== 'undefined' && SITE_DATA)
+      ? JSON.parse(JSON.stringify(SITE_DATA))
+      : { work: [], memories: [], creations: [] };
   }
 
   /* =========================================================
