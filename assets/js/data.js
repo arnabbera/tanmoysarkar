@@ -28,8 +28,8 @@ const SITE_DATA = {
       "title": "Handcrafted Jewelry & Royal Artisans",
       "category": "Commercial Film",
       "description": "High-definition product marketing reel highlighting intricate gold and silver craftsmanship for heritage jewelers.",
-      "embedUrl": "https://www.youtube.com/embed/xmYnzBu5A6o",
-      "rawYtUrl": "https://www.youtube.com/watch?v=xmYnzBu5A6o"
+      "embedUrl": "https://www.youtube.com/embed/dZGxwA0_rRo",
+      "rawYtUrl": "https://www.youtube.com/watch?v=dZGxwA0_rRo"
     }
   ],
   "memories": [
