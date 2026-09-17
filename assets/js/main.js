@@ -68,8 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* =========================================================
      3. Render Sections
      ========================================================= */
-  function renderAllSections() {
-    const data = getEffectiveSiteData();
+  function renderAllSections(data = getEffectiveSiteData()) {
     renderWorkSection(data.work || []);
     renderMemoriesSection(data.memories || []);
     renderCreationsSection(data.creations || []);
@@ -182,6 +181,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Boot
+  // Boot with repository fallback immediately, then subscribe to Firestore.
   renderAllSections();
+
+  if (window.TS_FIREBASE && window.TS_FIREBASE.contentRef) {
+    window.TS_FIREBASE.contentRef.onSnapshot(snapshot => {
+      if (!snapshot.exists) return;
+      const liveData = snapshot.data();
+      renderAllSections({
+        work: Array.isArray(liveData.work) ? liveData.work : [],
+        memories: Array.isArray(liveData.memories) ? liveData.memories : [],
+        creations: Array.isArray(liveData.creations) ? liveData.creations : []
+      });
+    }, error => {
+      console.warn('Firestore unavailable; showing repository content.', error);
+    });
+  }
 });
