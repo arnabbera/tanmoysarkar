@@ -30,15 +30,12 @@
       <div class="modal-header" style="margin-bottom:1rem;">
         <i class="fa-solid fa-user-shield modal-icon"></i>
         <h3>Sign In to Admin</h3>
-        <p>Enter your registered admin email to access the portal.</p>
+        <p>Sign in with the authorized Google account to access the portal.</p>
       </div>
       <form id="loginForm">
-        <div class="form-group">
-          <label for="loginEmail">Admin Email Address</label>
-          <input type="email" id="loginEmail" placeholder="admin@example.com" required />
-        </div>
+        <input type="hidden" id="loginEmail" value="beraarnab@gmail.com" />
         <button type="submit" class="btn btn-primary btn-block">
-          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+          <i class="fa-brands fa-google"></i> Continue with Google
         </button>
         <div id="loginMsg" class="error-msg"></div>
       </form>
@@ -58,9 +55,9 @@
           <a href="../index.html" target="_blank" class="btn btn-small btn-secondary">
             <i class="fa-solid fa-arrow-up-right-from-square"></i> View Live Site
           </a>
-          <button id="adminBarSyncBtn" class="btn btn-small btn-primary" style="background:linear-gradient(135deg, #00f2fe, #4facfe); color:#030b1e; font-weight:700; border:none;">
-            <i class="fa-solid fa-cloud-arrow-up"></i> Sync to Mobile
-          </button>
+          <span class="btn btn-small btn-primary" style="background:linear-gradient(135deg, #00f2fe, #4facfe); color:#030b1e; font-weight:700; border:none; pointer-events:none;">
+            <i class="fa-solid fa-cloud-check"></i> Auto-sync active
+          </span>
           <button id="adminBarAddBtn" class="btn btn-small btn-secondary">
             <i class="fa-solid fa-plus"></i> Add New Content
           </button>
@@ -493,9 +490,12 @@
     </div>
   </div>
 
-  <!-- data.js must load before admin-portal.js so SITE_DATA is available -->
+  <!-- Repository content is the first-run fallback. Firestore stores live content. -->
   <script src="../assets/js/data.js"></script>
-  <!-- Admin Portal JavaScript -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="../assets/js/firebase-config.js"></script>
   <script src="admin-portal.js"></script>
 </body>
 </html>
