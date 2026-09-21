@@ -149,6 +149,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'creation-card glass-card';
 
+      const thumbnailUrl = item.thumbnailUrl ||
+        (String(item.handle || '').toLowerCase() === '@foodisgod'
+          ? 'assets/images/food-is-god-thumbnail.svg'
+          : '');
+      const thumbnailHtml = thumbnailUrl
+        ? `<div class="creation-thumbnail" style="margin:-1px -1px 1rem; overflow:hidden; border-radius:var(--radius-md) var(--radius-md) 0 0;">
+             <img src="${thumbnailUrl}" alt="${item.title} thumbnail" style="display:block; width:100%; aspect-ratio:16/9; object-fit:cover;" loading="lazy" />
+           </div>`
+        : '';
+
       let iconClass = 'fa-brands fa-youtube icon-youtube';
       let btnIcon = 'fa-brands fa-youtube';
       let btnLabel = 'Visit Channel';
@@ -167,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       card.innerHTML = `
+        ${thumbnailHtml}
         <div class="channel-icon"><i class="${iconClass}"></i></div>
         <div class="card-body">
           <h3>${item.title}</h3>
