@@ -60,6 +60,7 @@ const SITE_DATA = {
       "handle": "@tanmoysarkarsarees",
       "description": "Dedicated to Indian fashion, saree draping arts, handloom weaving techniques, and boutique showcases.",
       "url": "https://youtube.com/@tanmoysarkarsarees",
+      "thumbnailUrl": "assets/images/fashion-handloom-thumbnail.svg",
       "iconStyle": "youtube"
     },
     {
