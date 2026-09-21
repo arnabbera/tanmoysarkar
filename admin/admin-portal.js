@@ -320,6 +320,15 @@ document.addEventListener('DOMContentLoaded', () => {
     siteData.creations.forEach(item => {
       const card = document.createElement('div');
       card.className = 'creation-card glass-card';
+      const thumbnailUrl = item.thumbnailUrl ||
+        (String(item.handle || '').toLowerCase() === '@foodisgod'
+          ? '../assets/images/food-is-god-thumbnail.svg'
+          : '');
+      const thumbnailHtml = thumbnailUrl
+        ? `<div class="creation-thumbnail" style="margin:-1px -1px 1rem; overflow:hidden; border-radius:var(--radius-md) var(--radius-md) 0 0;">
+             <img src="${safeUrl(thumbnailUrl)}" alt="${escapeHtml(item.title)} thumbnail" style="display:block; width:100%; aspect-ratio:16/9; object-fit:cover;" loading="lazy" />
+           </div>`
+        : '';
       const icons = {
         youtube: ['fa-brands fa-youtube icon-youtube', 'Visit Channel'],
         food: ['fa-solid fa-bowl-food icon-food', 'Visit Channel'],
@@ -327,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         web: ['fa-solid fa-globe icon-web', 'Open Webpage']
       };
       const [icon, label] = icons[item.iconStyle] || icons.youtube;
-      card.innerHTML = `${actionButtons('creations', item.id)}<div class="channel-icon"><i class="${icon}"></i></div>
+      card.innerHTML = `${actionButtons('creations', item.id)}${thumbnailHtml}<div class="channel-icon"><i class="${icon}"></i></div>
         <div class="card-body"><h3>${escapeHtml(item.title)}</h3><p class="channel-handle">${escapeHtml(item.handle)}</p>
         <p>${escapeHtml(item.description)}</p><a href="${safeUrl(item.url)}" target="_blank" rel="noopener" class="btn btn-outline">${label}</a></div>`;
       creationsGrid.appendChild(card);
