@@ -50,12 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadSiteData() {
+    let firestoreConnected = false;
     try {
-      const snapshot = await contentRef.get();
+      const snapshot = await contentRef.get({ source: 'server' });
+      firestoreConnected = true;
       if (snapshot.exists) {
         siteData = normalizeData(snapshot.data());
         localStorage.removeItem(STORAGE_KEY);
-        return;
+        return firestoreConnected;
       }
     } catch (error) {
       console.warn('Could not load Firestore content:', error);
@@ -67,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       console.warn('Could not load local draft:', error);
     }
+    return firestoreConnected;
   }
 
   async function persistSiteData(message = 'Saved automatically') {
@@ -81,7 +84,18 @@ document.addEventListener('DOMContentLoaded', () => {
       updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedBy: user.email
     });
+
+    // Confirm that the write reached Firestore before reporting success.
+    const serverCopy = await contentRef.get({ source: 'server' });
+    if (!serverCopy.exists) {
+      throw new Error('The update was not confirmed by Firestore. Please try again.');
+    }
     localStorage.removeItem(STORAGE_KEY);
+
+    const syncStatus = $('autoSyncStatus');
+    if (syncStatus) {
+      syncStatus.innerHTML = '<i class="fa-solid fa-cloud-check"></i> Auto-sync active';
+    }
 
     if (modalSaveFeedback) {
       modalSaveFeedback.textContent = `✅ ${message}. Mobile and desktop are updated automatically.`;
@@ -100,7 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
     adminPortal.classList.remove('hidden');
     $('adminBarEmail').textContent = user.email;
     $('activeAdminEmail').textContent = user.email;
-    await loadSiteData();
+    const firestoreConnected = await loadSiteData();
+    const syncStatus = $('autoSyncStatus');
+    if (syncStatus) {
+      syncStatus.innerHTML = firestoreConnected
+        ? '<i class="fa-solid fa-cloud-check"></i> Auto-sync active'
+        : '<i class="fa-solid fa-triangle-exclamation"></i> Auto-sync unavailable';
+    }
     renderAllSections();
     initNavigation();
   }
