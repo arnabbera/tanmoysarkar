@@ -80,6 +80,7 @@ const SITE_DATA = {
       "handle": "tanmoysarkarproductions.blogspot.com",
       "description": "Behind-the-scenes stories, shoot diaries, photography blogs, and video journalism insights.",
       "url": "https://tanmoysarkarproductions.blogspot.com",
+      "thumbnailUrl": "assets/images/travel-photo-blog-thumbnail.svg",
       "iconStyle": "blog"
     }
   ]
