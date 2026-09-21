@@ -69,6 +69,7 @@ const SITE_DATA = {
       "handle": "@foodisgod",
       "description": "A delicious tribute to Indian gastronomy, street food explorations, and authentic regional delicacies.",
       "url": "https://youtube.com/@foodisgod",
+      "thumbnailUrl": "assets/images/food-is-god-thumbnail.svg",
       "iconStyle": "food"
     },
     {
