@@ -320,10 +320,12 @@ document.addEventListener('DOMContentLoaded', () => {
     siteData.creations.forEach(item => {
       const card = document.createElement('div');
       card.className = 'creation-card glass-card';
+      const defaultThumbnails = {
+        '@foodisgod': '../assets/images/food-is-god-thumbnail.svg',
+        '@tanmoysarkarsarees': '../assets/images/fashion-handloom-thumbnail.svg'
+      };
       const thumbnailUrl = item.thumbnailUrl ||
-        (String(item.handle || '').toLowerCase() === '@foodisgod'
-          ? '../assets/images/food-is-god-thumbnail.svg'
-          : '');
+        defaultThumbnails[String(item.handle || '').toLowerCase()] || '';
       const thumbnailHtml = thumbnailUrl
         ? `<div class="creation-thumbnail" style="margin:-1px -1px 1rem; overflow:hidden; border-radius:var(--radius-md) var(--radius-md) 0 0;">
              <img src="${safeUrl(thumbnailUrl)}" alt="${escapeHtml(item.title)} thumbnail" style="display:block; width:100%; aspect-ratio:16/9; object-fit:cover;" loading="lazy" />
