@@ -322,7 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
       card.className = 'creation-card glass-card';
       const defaultThumbnails = {
         '@foodisgod': '../assets/images/food-is-god-thumbnail.svg',
-        '@tanmoysarkarsarees': '../assets/images/fashion-handloom-thumbnail.svg'
+        '@tanmoysarkarsarees': '../assets/images/fashion-handloom-thumbnail.svg',
+        'tanmoysarkarproductions.blogspot.com': '../assets/images/travel-photo-blog-thumbnail.svg'
       };
       const thumbnailUrl = item.thumbnailUrl ||
         defaultThumbnails[String(item.handle || '').toLowerCase()] || '';
