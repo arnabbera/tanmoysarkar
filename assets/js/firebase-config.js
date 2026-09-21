@@ -13,8 +13,11 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
+const firestoreDb = firebase.firestore();
+const firebaseAuth = typeof firebase.auth === "function" ? firebase.auth() : null;
+
 window.TS_FIREBASE = {
-  auth: firebase.auth(),
-  db: firebase.firestore(),
-  contentRef: firebase.firestore().collection("siteContent").doc("main")
+  auth: firebaseAuth,
+  db: firestoreDb,
+  contentRef: firestoreDb.collection("siteContent").doc("main")
 };
