@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAllSections();
 
   if (window.TS_FIREBASE && window.TS_FIREBASE.contentRef) {
-    window.TS_FIREBASE.contentRef.onSnapshot(snapshot => {
+    window.TS_FIREBASE.contentRef.onSnapshot({ includeMetadataChanges: true }, snapshot => {
       if (!snapshot.exists) return;
       const liveData = snapshot.data();
       renderAllSections({
